@@ -1,0 +1,45 @@
+@extends('layouts.app')
+
+@section('title', 'Login Admin Smezine')
+
+@push('styles')
+    <style>
+        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 70vh; padding: 20px; }
+        .login-card { background: #1e1e1e; border: 1px solid #333; width: 100%; max-width: 400px; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        .login-title { color: white; text-align: center; margin-bottom: 25px; font-weight: 700; font-size: 1.5rem; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; color: #ccc; margin-bottom: 8px; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 12px; background: #121212; border: 1px solid #444; color: white; border-radius: 8px; outline: none; transition: 0.3s; }
+        .form-control:focus { border-color: var(--primary); }
+        .btn-login { width: 100%; padding: 12px; background: var(--primary); color: white; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-login:hover { background: #147ce5; transform: translateY(-2px); }
+        .error-msg { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 20px; text-align: center; border: 1px solid #ff4d4d; }
+    </style>
+@endpush
+
+@section('content')
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2 class="login-title">Login Admin</h2>
+            
+            @if($errors->any())
+                <div class="error-msg">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form action="{{ url('/login') }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="masukkan email disini" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="masukkan password disini" required>
+                </div>
+                <button type="submit" class="btn-login">Masuk</button>
+            </form>
+        </div>
+    </div>
+@endsection
