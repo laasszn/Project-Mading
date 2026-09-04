@@ -4,10 +4,42 @@
 
 @section('content')
     <header class="hero">
-        <div class="slide active">
-            <img
-                src="image/ps.jpg"
-                alt="Seni"
+
+        @if(isset($sliderBeritas) && $sliderBeritas->isNotEmpty())
+            @foreach ($sliderBeritas as $index => $item)
+                <div class="slide {{ $index === 0 ? 'active' : '' }}">
+                    <img
+                        src="{{ $item->gambar ? asset('storage/' . $item->gambar) : 'https://via.placeholder.com/600x400?text=No+Image' }}"
+                        alt="{{ $item->judul }}"
+                    />
+                    <div class="hero-content">
+                        <span class="badge">{{ $index===0?'Terbaru':'Berita' }}</span>
+                        <h1>{{ Str::limit($item->judul, 65) }}</h1>
+                        <p>
+                            {{ Str::limit($item->deskripsi, 110) }}
+                        </p>
+                        <a href="{{ route('berita.show', $item->id) }}" class="btn-join"
+                            >Baca Selengkapnya</a
+                        >
+                    </div>
+                </div>
+                
+            @endforeach
+            <div class="dots">
+                @foreach($sliderBeritas as $index => $item)
+                    <div class="dot {{ $index===0?'active':'' }}"></div>
+                @endforeach
+            </div>
+        @else
+            <div class="slide active">
+                <img src="image/ps.jpg">
+                <div class="hero-content">...</div>
+            </div>
+            <div class="dots">
+                <div class="dot active"></div>
+            </div>
+        @endif
+
             />
             <div class="hero-content">
                 <span class="badge">Featured</span>
@@ -21,24 +53,6 @@
                 >
             </div>
         </div>
-        <div class="slide">
-            <img
-                src="https://discover.therookies.co/content/images/size/w1000/2024/04/Almecija_Sophie_blender-project.jpeg"
-                alt="3D"
-            />
-            <div class="hero-content">
-                <span class="badge">Workshop</span>
-                <h1>Belajar 3D Game Art</h1>
-                <p>Pelatihan gratis Blender untuk pemula di Multimedia.</p>
-                <a href="#" class="btn-join"
-                    >Daftar Sekarang</a
-                >
-            </div>
-        </div>
-        <div class="dots">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-        </div>
     </header>
 
     <div class="container">
@@ -47,24 +61,38 @@
             <p>Informasi terbaru seputar kegiatan sekolah.</p>
         </div>
 
-        @if($latestBerita->count())
+        @if($latestBeritas->count())
             <div class="grid-wrapper">
                 {{-- Berita paling baru jadi featured card gede --}}
                 <div style="display: flex; flex-direction: column; gap: 20px">
                     @php $featured = $latestBerita->first(); @endphp
-                    <a href="{{ route('berita.show', $featured->id) }}" class="card card-featured" style="text-decoration: none; color: inherit;">
-                        <img
-                            src="{{ $featured->gambar ? asset('storage/' . $featured->gambar) : 'https://via.placeholder.com/600x400?text=No+Image' }}"
-                            class="card-img-top"
-                            style="height: 100%; object-fit: cover;"
-                        />
-                        <div class="card-body">
-                            <h3 class="card-title">{{ $featured->judul }}</h3>
-                            <p class="card-text">{{ Str::limit($featured->deskripsi, 100) }}</p>
-                            <br />
-                            <span class="btn-join">Baca Selengkapnya</span>
+                    <div class="section-header-row">
+                        <div class="section-title" style="margin-bottom:0">
+                            <h2>Berita Terbaru</h2>
                         </div>
-                    </a>
+
+                        <a href="{{ route('berita.index') }}">
+                            Lihat Semua <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="home-latest-grid" style="margin-bottom: 60px">
+                        @foreach ($latestBerita as $berita)
+                            <a href="{{ route('berita.show', $berita->id) }}" class="home-news-card">
+                                <div class="thumb"><img src="{{ $berita->gambar ? asset('storage/'.$berita->gambar) : 'https://via.placeholder.com/400x220' }}"></div>
+                                <div class="body">
+                                    <span class="meta">
+                                        <i class="fa-regular fa-clock"></i> {{ $berita->created_at->diffForHumans() }}
+                                    </span>
+                                    <h3>{{ $berita->judul }}</h3>
+                                    <p>{{ Str::limit($berita->deskripsi, 78) }}</p>
+                                    <div class="foot">
+                                        <span>Berita</span>
+                                        <span class="read">Baca <i class="fa-solid fa-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- 3 berita berikutnya jadi list kecil di samping --}}
