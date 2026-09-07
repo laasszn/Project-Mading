@@ -1,21 +1,10 @@
 
 document.addEventListener('contextmenu', e => e.preventDefault());
-
 document.onkeydown = function(e) {
-    
-    if (event.keyCode == 123) return false;
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-}
-
-
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.onkeydown = function(e) {
-    if(event.keyCode == 123) return false;
-    if(e.ctrlKey && (e.key === 'u' || e.key === 'i' || e.key === 'j' || e.key === 'c')) return false;
-}
+    if (e.keyCode === 123) return false;
+    if (e.ctrlKey && e.shiftKey && ['I','C','J'].includes(e.key.toUpperCase())) return false;
+    if (e.ctrlKey && e.key.toLowerCase() === 'u') return false;
+};
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -51,27 +40,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function toggleMenu() {
-    document.getElementById('navLinks').classList.toggle('active');
+    const el = document.getElementById('navLinks');
+    if (el) el.classList.toggle('active');
 }
 
+// HERO SLIDER - robust, cegah title numpuk & image fullscreen
+document.addEventListener("DOMContentLoaded", () => {
+    const slides = document.querySelectorAll('.hero .slide');
+    const dots = document.querySelectorAll('.hero .dot');
+    const hero = document.querySelector('.hero');
+    if (!slides.length || !hero) return;
 
-let currentSlide = 0;
-const slides = document.querySelectorAll('.slide');
-const dots = document.querySelectorAll('.dot');
+    let currentSlide = 0;
+    let intervalId = null;
 
-if(slides.length > 0) {
     function showSlide(index) {
-        
-        slides[currentSlide].classList.remove('active');
-        dots[currentSlide].classList.remove('active');
-        
-        
-        currentSlide = (index + slides.length) % slides.length;
-        
-        
-        slides[currentSlide].classList.add('active');
-        dots[currentSlide].classList.add('active');
+        const total = slides.length;
+        if (total === 0) return;
+        const next = (index + total) % total;
+        if (next === currentSlide) return;
+
+        slides[currentSlide]?.classList.remove('active');
+        dots[currentSlide]?.classList.remove('active');
+
+        currentSlide = next;
+
+        slides[currentSlide]?.classList.add('active');
+        dots[currentSlide]?.classList.add('active');
     }
-    setInterval(() => showSlide(currentSlide + 1), 4000);
-}
+
+    function startAuto() {
+        stopAuto();
+        if (slides.length <= 1) return;
+        intervalId = setInterval(() => showSlide(currentSlide + 1), 4000);
+    }
+    function stopAuto() {
+        if (intervalId) { clearInterval(intervalId); intervalId = null; }
+    }
+
+    // init: pastikan hanya slide 0 yang active (cegah numpuk di load)
+    slides.forEach((s, i) => s.classList.toggle('active', i === 0));
+    dots.forEach((d, i) => {
+        d.classList.toggle('active', i === 0);
+        d.style.cursor = 'pointer';
+        d.addEventListener('click', () => {
+            showSlide(i);
+            startAuto(); // reset timer saat manual
+        });
+    });
+
+    // pause saat hover agar tidak kelewat cepat
+    hero.addEventListener('mouseenter', stopAuto);
+    hero.addEventListener('mouseleave', startAuto);
+
+    startAuto();
+});
 

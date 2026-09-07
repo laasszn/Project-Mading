@@ -17,6 +17,17 @@
 	/* Ubah dari 1100px menjadi 94% agar lebar tapi ada sisa 3% kanan-kiri */
 	/* Atau bisa pakai 1600px jika ingin batas maksimal di layar ultra-wide */
 	--container: 94%;
+
+	/* Golden ratio system φ = 1.618 */
+	--phi: 1.618;
+	--phi-inv: 0.618; /* 1/φ */
+	--phi2: 2.618; /* φ² */
+	--unit: 8px;
+	--space-xs: 8px;                /* base */
+	--space-sm: 13px;               /* 8*φ ≈13 */
+	--space-md: 21px;               /* 13*φ ≈21 */
+	--space-lg: 34px;               /* 21*φ ≈34 */
+	--space-xl: 55px;               /* 34*φ ≈55 */
 }
 
 * {
@@ -194,30 +205,34 @@ ul {
 }
 
 /* ============================
-   3. HERO SLIDER (Optimized)
+   3. HERO SLIDER (Optimized - Fixed fullscreen & title numpuk)
    ============================ */
 .hero {
 	position: relative;
 	height: 500px;
+	max-height: 60vh;
+	min-height: 360px;
 	overflow: hidden;
 	margin-bottom: 60px;
 	border-radius: 0 0 20px 20px;
+	width: 100%;
+	background: #111;
 }
 
 .slide {
 	position: absolute;
-	top: 0;
-	left: 0;
+	inset: 0;
 	width: 100%;
 	height: 100%;
 	opacity: 0;
-	transition: opacity 0.9s ease;
-	/* Transisi slide dipercepat */
+	visibility: hidden;
+	transition: opacity 0.85s ease-in-out, visibility 0.85s;
 	pointer-events: none;
 }
 
 .slide.active {
 	opacity: 1;
+	visibility: visible;
 	pointer-events: auto;
 }
 
@@ -225,49 +240,84 @@ ul {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	filter: brightness(0.5);
+	object-position: center;
+	filter: brightness(0.55);
+	display: block;
+}
+
+/* Overlay gelap agar teks tetap terbaca tanpa harus brightness berlebihan */
+.slide::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.25) 100%);
+	z-index: 1;
+	pointer-events: none;
 }
 
 .hero-content {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -45%);
 	text-align: center;
 	width: 90%;
 	max-width: 800px;
 	z-index: 2;
+	opacity: 0;
+	transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+	pointer-events: none;
+}
+
+.slide.active .hero-content {
+	opacity: 1;
+	transform: translate(-50%, -50%);
+	pointer-events: auto;
 }
 
 .badge {
-	background: rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.12);
 	border: 1px solid rgba(255, 255, 255, 0.2);
-	color: rgb(255, 255, 255);
+	color: #fff;
 	padding: 5px 15px;
 	border-radius: 90px;
-	font-size: 1rem;
+	font-size: 0.8rem;
 	font-weight: 700;
 	text-transform: uppercase;
+	letter-spacing: 0.5px;
 	display: inline-block;
-	margin-bottom: 20px;
+	margin-bottom: 16px;
+	backdrop-filter: blur(4px);
 }
 
 .hero-content h1 {
-	font-size: 2.8rem;
-	margin-bottom: 15px;
-	line-height: 1.1;
+	font-size: 2.6rem;
+	margin-bottom: 12px;
+	line-height: 1.15;
 	font-weight: 700;
+	color: #fff;
+	text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 .hero-content p {
-	font-size: 1.1rem;
-	color: #ccc;
-	margin-bottom: 25px;
+	font-size: 1rem;
+	color: #d8d8d8;
+	margin-bottom: 22px;
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-shadow: 0 1px 10px rgba(0,0,0,0.5);
 }
 
 .dots {
 	position: absolute;
-	bottom: 30px;
+	bottom: 24px;
 	left: 50%;
 	transform: translateX(-50%);
 	display: flex;
@@ -276,15 +326,19 @@ ul {
 }
 
 .dot {
-	width: 8px;
-	height: 8px;
-	background: rgba(255, 255, 255, 0.3);
-	border-radius: 50%;
+	width: 32px;
+	height: 4px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.35);
 	cursor: pointer;
+	transition: background 0.3s, width 0.3s;
+	border: none;
+	padding: 0;
 }
 
 .dot.active {
-	background: white;
+	background: #fff;
+	width: 36px;
 }
 
 /* ============================
@@ -454,61 +508,85 @@ ul {
 	align-items: center;
 	margin-bottom: 20px;
 }
+.container > .section-header-row {
+	max-width: 1040px; /* samakan dengan grid golden */
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 21px; /* 13*φ */
+}
 
+/* Golden ratio: gap = 21px (13*φ), radius = 13px (8*φ), thumb = width/φ, body = thumb*0.618 */
 .home-latest-grid {
 	display: grid;
-	grid-template-columns: repeat(3,1fr);
-	gap: 20px;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--space-md); /* 21px = 13*φ */
+	max-width: 1040px; /* dikecilin ~8% dari full 94% biar tidak terlalu lebar */
+	margin: 0 auto 40px;
 }
 
 .home-news-card {
 	display: flex;
 	flex-direction: column;
 	background: var(--bg-card);
-	border-radius: var(--radius);
+	border-radius: var(--space-sm); /* 13px = 8*φ */
 	overflow: hidden;
-	text-decorartion: none;
+	text-decoration: none;
 	color: inherit;
-	border: 1x solid rgba(255, 255, 255, 0.05);
-	filter: brightness(0,6) grayscale(20%);
-	opacity: 0.85;
-	transform: scale(0.98);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	filter: brightness(0.68) grayscale(18%);
+	opacity: 0.9;
+	transform: scale(0.985);
 	transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .home-news-card:hover {
 	transform: translateY(-5px) scale(1);
-	border-color: rgb(255, 255, 255);
+	border-color: rgba(255,255,255,0.9);
 	filter: brightness(1) grayscale(0%);
 	opacity: 1;
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+	box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
 	z-index: 10;
 }
 
 .home-news-card .thumb {
 	width: 100%;
-	height: 140px;
+	aspect-ratio: 1.618 / 1; /* φ : 1  - golden rectangle, proporsional tidak ke-crop */
+	height: auto;
 	overflow: hidden;
+	background: #0f0f0f;
 }
 
+.home-news-card .thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	transition: transform 0.5s ease;
+	display: block;
+}
+.home-news-card:hover .thumb img { transform: scale(1.04); }
+
 .home-news-card .body {
-	padding: 12px 14px;
+	padding: var(--space-sm) var(--space-sm) 12px; /* 13px - golden */
 	display: flex;
 	flex-direction: column;
 	flex-grow: 1;
 	position: relative;
 	z-index: 2;
+	gap: 4px; /* 8*0.5 */
 }
 
 .home-news-card p {
-	font-size: 0.78rem;
+	font-size: 0.8125rem; /* 13px = 8*φ, dikecilin dari 0.78rem tapi proporsional */
 	color: var(--text-muted);
-	margin-bottom: 15px;
+	margin: 0 0 10px;
+	line-height: 1.6; /* φ ≈1.618 */
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 	transition: color 0.3s;
+	min-height: calc(1.6em * 2); /* jaga tinggi 2 baris golden line-height */
 }
 
 .home-news-card:hover p{
@@ -519,12 +597,39 @@ ul {
 	margin-top: auto;
 	display: flex;
 	justify-content: space-between;
-	font-size: 0.8rem;
+	align-items: center;
+	font-size: 0.75rem; /* 12px ≈ 21*0.618*0.618 */
 	font-weight: 600;
+	padding-top: 8px; /* 13*0.618 ≈8 */
+	border-top: 1px solid rgba(255,255,255,0.04);
 }
 
-.home-news-card .foot read {
+.home-news-card .meta {
+	color: #888;
+	font-size: 0.6875rem; /* 11px - golden scale down */
+	margin-bottom: 2px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	letter-spacing: 0.2px;
+}
+
+.home-news-card h3 {
+	color: #fff;
+	font-size: 0.9375rem; /* 15px - dikecilin dari 16px tapi ratio φ ke p: 15/13≈1.15 ~ φ*0.71 */
+	font-weight: 700;
+	line-height: 1.35; /* φ*0.83 */
+	margin: 0 0 2px;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	min-height: calc(1.35em * 2);
+}
+
+.home-news-card .foot .read {
 	color: var(--primary);
+	font-size: 0.75rem;
 }
 
 /* Form */
@@ -581,6 +686,17 @@ footer {
 	}
 }
 
+@media (max-width: 992px) {
+	.home-latest-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.hero {
+		height: 430px;
+		min-height: 380px;
+	}
+	.hero-content h1 { font-size: 2.1rem; }
+}
+
 @media (max-width: 768px) {
 	.nav-links {
 		display: none;
@@ -605,4 +721,26 @@ footer {
 	.grid-wrapper {
 		grid-template-columns: 1fr;
 	}
+
+	.home-latest-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.section-header-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
+
+	.hero {
+		height: 380px;
+		min-height: 320px;
+		max-height: none;
+		border-radius: 0 0 14px 14px;
+	}
+	.hero-content h1 { font-size: 1.65rem; }
+	.hero-content p { font-size: 0.9rem; -webkit-line-clamp: 3; }
+	.hero-content { width: 92%; }
+	.dot { width: 22px; }
+	.dot.active { width: 28px; }
 }

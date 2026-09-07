@@ -9,11 +9,7 @@ use App\Http\Controllers\AuthController; // <-- Jangan lupa ini buat login
 //HALAMAN PUBLIC
 
 //home/beranda
-Route::get('/', function () {
-    $sliderBeritas = \App\Models\Berita::latest()->take(3)->get();
-    $latestBeritas = \App\Models\Berita::latest()->take(6)->get();
-    return view('home', compact('sliderBeritas', 'latestBeritas'));
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 //mading berita public
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');

@@ -168,11 +168,7 @@
                 <h4>Fotografi & Videografi</h4>
                 <p>Dokumentasi kegiatan sekolah dalam bentuk foto dan video singkat.</p>
             </div>
-            <div class="divisi-card">
-                <div class="divisi-icon"><i class="fa-solid fa-laptop-code"></i></div>
-                <h4>Media Digital</h4>
-                <p>Mengelola website dan media sosial Smezine agar tetap update.</p>
-            </div>
+
         </div>
 
         <div class="section-title text-center" style="margin-bottom: 40px; text-align: center">

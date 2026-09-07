@@ -82,7 +82,7 @@
         <a href="{{ route('berita.index') }}" class="back-link">&larr; Kembali ke Berita</a>
 
         <h1 class="article-title">{{ $berita->judul }}</h1>
-        <p class="article-meta">Dipublikasikan {{ $berita->created_at->translatedFormat('d F Y') }}</p>
+        <p class="article-meta"><i class="fa-regular fa-clock"></i> {{ $berita->waktu_tampil }} &middot; {{ $berita->created_at->translatedFormat('d F Y') }}</p>
 
         @if($berita->gambar)
             <img src="{{ asset('storage/' . $berita->gambar) }}" alt="{{ $berita->judul }}" class="article-img">
