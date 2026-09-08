@@ -456,6 +456,22 @@
             border-radius: 10px;
         }
 
+        /* Grab-to-scroll ala galeri: kursor grab + cegah seleksi saat drag */
+        .slide-3-cards-col { cursor: grab; }
+        .slide-3-cards-col.is-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .slide-3-cards-col.is-dragging img { pointer-events: none; }
+        .slide-3-cards-col:focus { outline: none; }
+        .slide-3-cards-col:focus-visible {
+            outline: 2px solid rgba(37, 99, 235, 0.5);
+            outline-offset: -2px;
+            border-radius: 12px;
+        }
+
         .division-card-box {
             flex: 0 0 240px;
             height: 74%;
@@ -626,6 +642,10 @@
         html[data-theme="light"] .division-caption h3 { color: #0f172a; }
         html[data-theme="light"] .d-bookmark { color: #94a3b8; }
         html[data-theme="light"] .division-card-box:hover .d-bookmark { color: var(--accent-red); }
+
+        /* Toggle tema pindah ke kanan bawah: pojok kiri bawah dipakai
+           tombol geser kartu pada panel biru slide 3 */
+        .theme-toggle-float { left: auto; right: 18px; }
     </style>
 @endpush
 
@@ -823,7 +843,51 @@
             }, { passive: false });
         }
 
-        // 4. Deteksi Slide Aktif Menggunakan IntersectionObserver (Update Dots)
+        // 4. Grab-to-scroll ala galeri: klik-tahan-geser kartu dengan mouse
+        if (cardsTrack) {
+            // Matikan drag bawaan gambar agar tidak bentrok dengan geser manual
+            cardsTrack.querySelectorAll('img').forEach(function (img) {
+                img.setAttribute('draggable', 'false');
+                img.addEventListener('dragstart', function (e) { e.preventDefault(); });
+            });
+
+            let isDown = false;
+            let dragged = false;
+            let startX = 0;
+            let startScroll = 0;
+
+            cardsTrack.setAttribute('tabindex', '0');
+            cardsTrack.addEventListener('pointerdown', function (e) {
+                if (e.pointerType !== 'mouse' || e.button !== 0) return;
+                isDown = true;
+                dragged = false;
+                startX = e.clientX;
+                startScroll = cardsTrack.scrollLeft;
+                cardsTrack.classList.add('is-dragging');
+            });
+            cardsTrack.addEventListener('pointermove', function (e) {
+                if (!isDown) return;
+                const dx = e.clientX - startX;
+                if (Math.abs(dx) > 6) dragged = true;
+                if (dragged) cardsTrack.scrollLeft = startScroll - dx;
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (evt) {
+                cardsTrack.addEventListener(evt, function () {
+                    isDown = false;
+                    cardsTrack.classList.remove('is-dragging');
+                    setTimeout(function () { dragged = false; }, 50);
+                });
+            });
+            // Bedakan klik vs drag: habis drag jangan picu klik kartu
+            cardsTrack.addEventListener('click', function (e) {
+                if (dragged) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+        }
+
+        // 5. Deteksi Slide Aktif Menggunakan IntersectionObserver (Update Dots)
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -844,7 +908,7 @@
 
         sections.forEach(sec => observer.observe(sec));
 
-        // 5. Dukungan Panah Keyboard Atas & Bawah
+        // 6. Dukungan Panah Keyboard Atas & Bawah
         window.addEventListener('keydown', (e) => {
             if (['ArrowDown', 'PageDown', 'Space'].includes(e.key)) {
                 e.preventDefault();

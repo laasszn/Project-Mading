@@ -122,3 +122,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startAuto();
 });
+
+// SMART NAVBAR - sembunyi saat scroll ke bawah, langsung muncul
+// kembali saat scroll ke atas walau sedikit.
+(function () {
+    const HIDE_AFTER = 120; // px: jangan sembunyi di paling atas halaman
+    let lastY = window.scrollY || 0;
+    let ticking = false;
+
+    function update() {
+        ticking = false;
+        const nav = document.querySelector('.navbar');
+        if (!nav) return;
+        const y = window.scrollY || 0;
+        // Jangan sembunyikan saat menu mobile sedang terbuka.
+        const menuOpen = document.getElementById('navLinks')?.classList.contains('active');
+        if (menuOpen || y <= HIDE_AFTER) {
+            nav.classList.remove('navbar-hidden');
+        } else if (y > lastY) {
+            nav.classList.add('navbar-hidden');
+        } else if (y < lastY) {
+            nav.classList.remove('navbar-hidden');
+        }
+        lastY = y;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+        }
+    }, { passive: true });
+})();

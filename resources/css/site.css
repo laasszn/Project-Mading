@@ -130,6 +130,13 @@ ul {
 	-webkit-backdrop-filter: blur(10px);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 	padding: 12px 0;
+	/* Smart hide: geser halus saat disembunyikan */
+	transition: transform 0.3s ease;
+}
+
+/* Navbar tersembunyi saat user scroll ke bawah */
+.navbar-hidden {
+	transform: translateY(-101%);
 }
 
 .nav-content {
