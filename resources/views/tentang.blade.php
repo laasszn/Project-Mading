@@ -1,239 +1,816 @@
 @extends('layouts.app')
 
-@section('title', 'Profil Mading - SMK N 1 Dukuhturi')
+@section('title', 'Profil Smezine - SMK N 1 Dukuhturi')
 
 @push('styles')
-    <style>
-        body { background-image: none !important; background-color: #121212 !important; font-family: "Poppins", sans-serif; opacity: 1 !important; transform: none !important; }
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* HERO */
-        .profile-hero {
+    <style>
+        :root {
+            --blue-primary: #2563eb;
+            --blue-dark: #1d4ed8;
+            --dark-bg: #07090e;
+            --dark-surface: #0f131d;
+            --dark-card: rgba(18, 24, 38, 0.88);
+            --dark-border: rgba(255, 255, 255, 0.08);
+            --text-muted: #94a3b8;
+        }
+
+        /* RESET AGAR TIDAK TERKUNCI */
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: var(--dark-bg) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #ffffff;
+            overflow: hidden !important;
+        }
+
+        /* MANGA SCREEN PATTERN (BERSIH, TANPA GLOW) */
+        .manga-panel-pattern {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                radial-gradient(rgba(255, 255, 255, 0.06) 1.2px, transparent 1.2px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 26px 26px, 120px 120px, 120px 120px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ========================================================
+           CONTAINER UTAMA SCROLL-SNAP VERTIKAL (3 SLIDE)
+           ======================================================== */
+        .fullpage-scroll-container {
+            width: 100vw;
+            height: calc(100vh - 65px);
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
             position: relative;
-            text-align: center;
-            padding: 80px 20px 60px;
+            z-index: 5;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .fullpage-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .fullpage-slide-section {
+            width: 100vw;
+            height: calc(100vh - 65px);
+            min-height: calc(100vh - 65px);
+            max-height: calc(100vh - 65px);
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+            background-color: var(--dark-bg);
+            display: flex;
+            align-items: center;
+        }
+
+        /* INDIKATOR 3 TITIK VERTIKAL KANAN */
+        .vertical-dots-nav {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 999;
+        }
+        .v-dot-item {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .v-dot-item.active {
+            height: 28px;
+            border-radius: 20px;
+            background: var(--blue-primary);
+        }
+
+        /* ========================================================
+           SLIDE 1: INTRO (FOTO BESAR & TANPA GLOW)
+           ======================================================== */
+        .slide-1-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        .slide-1-img-col {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+            padding-bottom: 25px;
+            box-sizing: border-box;
+        }
+
+        .hero-team-img {
+            height: 88%;
+            max-height: 90%;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            object-position: bottom center;
+            filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.9));
+            transform: translateY(60px);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+            position: relative;
+            z-index: 5;
+        }
+
+        .fullpage-slide-section.active .hero-team-img {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .trio-indicator-dots {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .t-dot {
+            width: 9px;
+            height: 9px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+        }
+        .t-dot.active {
+            width: 24px;
+            background: var(--blue-primary);
+            border-radius: 20px;
+        }
+
+        .slide-1-text-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 80px 0 20px;
+            z-index: 5;
+        }
+
+        .slide-1-text-col h1 {
+            font-size: clamp(2.3rem, 3.8vw, 3.6rem);
+            font-weight: 900;
+            line-height: 1.15;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            margin: 0 0 18px 0;
+            color: #ffffff;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+        }
+        .slide-1-text-col h1 span {
+            color: var(--blue-primary);
+        }
+
+        .slide-1-text-col p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 0 32px 0;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+        }
+
+        .btn-blue-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--blue-primary);
+            color: #ffffff;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.25s ease;
+            width: fit-content;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.35s;
+        }
+        .btn-blue-action:hover {
+            background: var(--blue-dark);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        .fullpage-slide-section.active .slide-1-text-col h1,
+        .fullpage-slide-section.active .slide-1-text-col p,
+        .fullpage-slide-section.active .btn-blue-action {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ========================================================
+           SLIDE 2: KETUA UMUM (KARTU KACA & BADGE #01 BPH)
+           ======================================================== */
+        .slide-2-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        .slide-2-card-col {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 60px 0 80px;
+            z-index: 15;
+        }
+
+        .glass-intro-card {
+            background: var(--dark-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 45px 42px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            position: relative;
+            max-width: 480px;
+            transform: translateX(-50px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+        }
+
+        .fullpage-slide-section.active .glass-intro-card {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .glass-intro-card h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 4px 0;
+            line-height: 1.1;
+        }
+        .glass-intro-card h2 span {
+            color: var(--blue-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            display: block;
+            margin-top: 6px;
+        }
+
+        .glass-intro-card p {
+            color: #cbd5e1;
+            font-size: 0.96rem;
+            line-height: 1.7;
+            margin: 20px 0 30px 0;
+        }
+
+        .circular-bph-badge {
+            position: absolute;
+            bottom: -25px;
+            right: 35px;
+            background: var(--blue-primary);
+            color: #ffffff;
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.05rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            border: 3px solid var(--dark-bg);
+            z-index: 20;
+        }
+        .circular-bph-badge span {
+            font-size: 0.65rem;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        .slide-2-img-col {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
             overflow: hidden;
         }
-        .profile-hero::before {
+
+        .curved-blue-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1e3a8a, rgba(37, 99, 235, 0.4));
+            border-top-left-radius: 260px;
+            border-bottom-left-radius: 40px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .lead-big-img {
+            height: 92%;
+            max-height: 94%;
+            width: auto;
+            object-fit: contain;
+            object-position: bottom center;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.85));
+            position: relative;
+            z-index: 5;
+            transform: translateY(60px);
+            opacity: 0;
+            transition: all 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+        }
+
+        .fullpage-slide-section.active .lead-big-img {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ========================================================
+           SLIDE 3: DIVISI & PENGURUS HARIAN (SEMUA 8 KARTU TAMPIL)
+           ======================================================== */
+        .slide-3-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        .slide-3-blue-col {
+            background: linear-gradient(175deg, #1e40af, #1d4ed8, #0f172a);
+            height: 100%;
+            padding: 70px 40px 50px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        .slide-3-blue-col h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3.4rem;
+            line-height: 0.95;
+            letter-spacing: 2px;
+            margin: 10px 0 0 0;
+            color: #ffffff;
+        }
+
+        .slide-3-blue-col p {
+            font-size: 0.92rem;
+            color: #bfdbfe;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Navigasi Panah Geser Kartu */
+        .cards-scroll-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-card-nav {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-card-nav:hover {
+            background: var(--blue-primary);
+            transform: scale(1.08);
+        }
+
+        .slide-3-cards-col {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 60px 0 35px;
+            gap: 22px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            box-sizing: border-box;
+            /* Scrollbar halus agar user tahu kartu bisa digeser */
+            scrollbar-width: thin;
+            scrollbar-color: var(--blue-primary) rgba(255, 255, 255, 0.05);
+        }
+        .slide-3-cards-col::-webkit-scrollbar {
+            height: 6px;
+            display: block;
+        }
+        .slide-3-cards-col::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .slide-3-cards-col::-webkit-scrollbar-thumb {
+            background: var(--blue-primary);
+            border-radius: 10px;
+        }
+
+        .division-card-box {
+            flex: 0 0 240px;
+            height: 74%;
+            border-radius: 22px;
+            position: relative;
+            overflow: hidden;
+            background: #0d121f;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 22px;
+            box-sizing: border-box;
+            cursor: pointer;
+            transform: translateY(40px);
+            opacity: 0;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, border-color 0.25s ease;
+        }
+
+        /* PERBAIKAN: SEMUA KARTU (1 s/d 8) DIBUAT TAMPIL OTOMATIS */
+        .fullpage-slide-section.active .division-card-box {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .division-card-box:nth-child(1) { transition-delay: 0.05s; }
+        .division-card-box:nth-child(2) { transition-delay: 0.1s; }
+        .division-card-box:nth-child(3) { transition-delay: 0.15s; }
+        .division-card-box:nth-child(4) { transition-delay: 0.2s; }
+        .division-card-box:nth-child(5) { transition-delay: 0.25s; }
+        .division-card-box:nth-child(6) { transition-delay: 0.3s; }
+        .division-card-box:nth-child(7) { transition-delay: 0.35s; }
+        .division-card-box:nth-child(8) { transition-delay: 0.4s; }
+
+        .division-card-box:hover {
+            transform: translateY(-8px) !important;
+            border-color: var(--blue-primary);
+        }
+
+        .char-img-inner {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 85%;
+            object-fit: cover;
+            object-position: top center;
+            z-index: 1;
+            transition: transform 0.4s ease;
+        }
+        .division-card-box:hover .char-img-inner {
+            transform: translateX(-50%) scale(1.06);
+        }
+
+        .division-card-box::after {
             content: "";
             position: absolute;
-            top: -100px; left: 50%; transform: translateX(-50%);
-            width: 600px; height: 400px;
-            background: radial-gradient(circle, rgba(41, 151, 255, 0.18) 0%, transparent 70%);
-            z-index: 0;
+            inset: 0;
+            background: linear-gradient(to top, rgba(7, 9, 14, 0.98) 0%, rgba(7, 9, 14, 0.6) 45%, transparent 85%);
+            z-index: 2;
         }
-        .profile-hero .eyebrow {
-            position: relative; z-index: 1;
-            display: inline-block; color: var(--primary); background: rgba(41, 151, 255, 0.1);
-            border: 1px solid rgba(41, 151, 255, 0.3); padding: 6px 18px; border-radius: 30px;
-            font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;
-        }
-        .profile-hero h1 { position: relative; z-index: 1; color: #fff; font-size: 2.6rem; font-weight: 800; margin-bottom: 15px; }
-        .profile-hero p { position: relative; z-index: 1; color: #999; font-size: 1.05rem; max-width: 600px; margin: 0 auto; line-height: 1.7; }
 
-        /* STATS */
-        .stats-row {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
-            max-width: 900px; margin: 50px auto 70px;
+        .division-caption {
+            position: relative;
+            z-index: 5;
         }
-        .stat-box { text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 25px 15px; }
-        .stat-box .num { color: var(--primary); font-size: 2rem; font-weight: 800; }
-        .stat-box .label { color: #999; font-size: 0.8rem; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* SEJARAH */
-        .intro-section {
-            background: linear-gradient(145deg, rgba(30, 30, 30, 0.8), rgba(20, 20, 20, 0.9));
-            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px;
-            padding: 40px; margin-bottom: 40px; position: relative; overflow: hidden;
+        .division-caption .d-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--blue-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
         }
-        .intro-section::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); }
-        .intro-section h2 { color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .intro-section p { color: #ccc; line-height: 1.8; }
 
-        /* VISI MISI */
-        .vm-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; margin-bottom: 60px; }
-        .vm-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px; height: 100%; transition: 0.3s; }
-        .vm-card:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-5px); }
-        .vm-title { color: var(--primary); font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .misi-list { list-style: none; padding: 0; }
-        .misi-list li { position: relative; padding-left: 25px; margin-bottom: 12px; color: #ccc; }
-        .misi-list li::before { content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 0; top: 2px; color: var(--primary); }
+        .division-caption h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.25;
+        }
 
-        /* DIVISI / BIDANG */
-        .divisi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; margin-bottom: 60px; }
-        .divisi-card {
-            background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 14px; padding: 25px;
-            transition: 0.3s;
+        .d-bookmark {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 6;
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            transition: color 0.25s ease, transform 0.25s ease;
         }
-        .divisi-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(41,151,255,0.15); }
-        .divisi-icon {
-            width: 46px; height: 46px; border-radius: 12px; background: rgba(41,151,255,0.12);
-            color: var(--primary); display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; margin-bottom: 15px;
+        .division-card-box:hover .d-bookmark {
+            color: var(--blue-primary);
+            transform: scale(1.15);
         }
-        .divisi-card h4 { color: #fff; font-size: 1.05rem; margin-bottom: 8px; }
-        .divisi-card p { color: #999; font-size: 0.85rem; line-height: 1.6; }
 
-        /* STRUKTUR ORGANISASI */
-        .org-container { position: relative; padding-top: 20px; }
-        .org-level { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-bottom: 45px; position: relative; z-index: 2; }
-        .profile-card {
-            background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 14px; padding: 22px;
-            width: 210px; text-align: center; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); transition: 0.3s;
-        }
-        .profile-card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: 0 10px 25px rgba(41, 151, 255, 0.2); }
-        .profile-img {
-            display: block; margin: 0 auto 15px; width: 78px; height: 78px;
-            border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; background: #000;
-        }
-        .p-name { color: white; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
-        .p-role { color: #888; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .p-role.highlight { color: var(--primary); }
-        .divisi-heading { text-align: center; color: #aaa; margin-bottom: 20px; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; }
-
-        @media (max-width: 768px) {
-            .vm-grid { grid-template-columns: 1fr; }
-            .stats-row { grid-template-columns: repeat(2, 1fr); }
-            .org-level { gap: 15px; }
-            .profile-card { width: 100%; max-width: 250px; }
-            .profile-hero h1 { font-size: 2rem; }
+        /* RESPONSIVE LAYAR HP */
+        @media (max-width: 992px) {
+            .slide-1-grid,
+            .slide-2-grid,
+            .slide-3-grid {
+                grid-template-columns: 1fr;
+            }
+            .slide-1-img-col {
+                order: 2;
+                height: 48%;
+            }
+            .slide-1-text-col {
+                order: 1;
+                padding: 40px 25px 0;
+            }
+            .slide-2-img-col {
+                display: none;
+            }
+            .slide-2-card-col {
+                padding: 40px 25px 0;
+                justify-content: center;
+            }
+            .slide-3-blue-col {
+                height: auto;
+                padding: 30px 25px 15px;
+            }
+            .slide-3-cards-col {
+                padding: 15px 25px 40px;
+            }
+            .vertical-dots-nav {
+                right: 14px;
+            }
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="ambient-bg">
-        <div class="light-blob-1"></div>
-        <div class="light-blob-2"></div>
-    </div>
+<!-- MANGA PATTERN OVERLAY (TANPA GLOW) -->
+<div class="manga-panel-pattern"></div>
 
-    <div class="profile-hero">
-        <span class="eyebrow">Profil Ekstrakurikuler</span>
-        <h1>Smezine</h1>
-        <p>Kreativitas Tanpa Batas, Literasi Berkualitas — wadah siswa SMK N 1 Dukuhturi untuk berkarya lewat tulisan, desain, dan media digital.</p>
-    </div>
+<!-- INDIKATOR 3 TITIK VERTIKAL SISI KANAN -->
+<div class="vertical-dots-nav">
+    <div class="v-dot-item active" onclick="jumpToSlide(0)"></div>
+    <div class="v-dot-item" onclick="jumpToSlide(1)"></div>
+    <div class="v-dot-item" onclick="jumpToSlide(2)"></div>
+</div>
 
-    <div class="stats-row">
-        <div class="stat-box"><div class="num">2010</div><div class="label">Didirikan</div></div>
-        <div class="stat-box"><div class="num">15+</div><div class="label">Tahun Berkarya</div></div>
-        <div class="stat-box"><div class="num">4</div><div class="label">Divisi Aktif</div></div>
-        <div class="stat-box"><div class="num">50+</div><div class="label">Anggota</div></div>
-    </div>
+<!-- ========================================================
+     CONTAINER FULLPAGE (HANYA 3 SLIDE)
+     ======================================================== -->
+<div class="fullpage-scroll-container" id="scrollContainer">
 
-    <div class="container" style="padding-bottom: 80px">
-        <div class="intro-section">
-            <h2><i class="fa-solid fa-clock-rotate-left"></i> Sejarah Singkat</h2>
-            <p>
-                Ekstrakurikuler Mading (Smezine) SMK N 1 Dukuhturi didirikan pada tahun 2010. Awalnya, kami hanya berfokus pada majalah dinding tempel konvensional yang terbit setiap bulan.
-                <br /><br />
-                Seiring perkembangan teknologi, pada tahun 2020 kami mulai merambah ke dunia digital dengan mengembangkan <strong>Mading 3D, E-Magazine, dan Jurnalistik Website</strong>. Kini, Smezine menjadi wadah utama bagi siswa untuk menyalurkan bakat di bidang desain grafis, fotografi, videografi, dan kepenulisan.
-            </p>
-        </div>
-
-        <div class="vm-grid">
-            <div class="vm-card">
-                <div class="vm-title"><i class="fa-solid fa-eye"></i> Visi</div>
-                <p style="font-size: 1.05rem; color: white; line-height: 1.6; font-style: italic;">
-                    "Mewujudkan generasi muda yang kritis, kreatif, dan inovatif melalui budaya literasi serta penguasaan teknologi media digital."
-                </p>
-            </div>
-            <div class="vm-card">
-                <div class="vm-title"><i class="fa-solid fa-list-check"></i> Misi</div>
-                <ul class="misi-list">
-                    <li>Mengembangkan kemampuan jurnalistik dan reportase siswa.</li>
-                    <li>Meningkatkan skill desain grafis dan multimedia anggota.</li>
-                    <li>Menyajikan informasi sekolah yang akurat dan menarik.</li>
-                    <li>Berpartisipasi aktif dalam kompetisi mading tingkat daerah & nasional.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="section-title text-center" style="margin-bottom: 30px; text-align: center">
-            <h2 style="color: white">Bidang Kegiatan</h2>
-            <p style="color: var(--primary)">Ruang berkarya untuk setiap minat</p>
-        </div>
-
-        <div class="divisi-grid">
-            <div class="divisi-card">
-                <div class="divisi-icon"><i class="fa-solid fa-pen-nib"></i></div>
-                <h4>Jurnalistik</h4>
-                <p>Reportase kegiatan sekolah, penulisan artikel, dan wawancara narasumber.</p>
-            </div>
-            <div class="divisi-card">
-                <div class="divisi-icon"><i class="fa-solid fa-palette"></i></div>
-                <h4>Desain Grafis</h4>
-                <p>Ilustrasi, layout mading, dan visual untuk publikasi digital maupun cetak.</p>
-            </div>
-            <div class="divisi-card">
-                <div class="divisi-icon"><i class="fa-solid fa-camera"></i></div>
-                <h4>Fotografi & Videografi</h4>
-                <p>Dokumentasi kegiatan sekolah dalam bentuk foto dan video singkat.</p>
+    <!-- SLIDE 1: INTRO SMEZINE - JUDUL, DESKRIPSI, FOTO DARI DB (tentang_slide1s) -->
+    <section class="fullpage-slide-section active" id="sec-slide-0">
+        <div class="slide-1-grid">
+            <div class="slide-1-img-col">
+                @if(isset($slide1) && $slide1 && $slide1->foto)
+                    <img src="{{ asset('storage/' . $slide1->foto) }}" 
+                         alt="Slide 1" 
+                         class="hero-team-img"
+                         onerror="this.src='https://www.pngmart.com/files/4/Haikyuu-PNG-Photos.png'">
+                @else
+                    <img src="https://www.pngmart.com/files/4/Haikyuu-PNG-Photos.png" 
+                         alt="Smezine Team" 
+                         class="hero-team-img"
+                         onerror="this.src='https://pngimg.com/uploads/anime_girl/anime_girl_PNG41.png'">
+                @endif
             </div>
 
-        </div>
-
-        <div class="section-title text-center" style="margin-bottom: 40px; text-align: center">
-            <h2 style="color: white">Struktur Organisasi</h2>
-            <p style="color: var(--primary)">Periode 2025/2026</p>
-        </div>
-
-        <div class="org-container">
-            <div class="org-level">
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=Ketua+Umum&background=2997ff&color=fff&size=128" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role highlight">Ketua Umum</div>
-                </div>
-            </div>
-
-            <div class="org-level">
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=Ketua+1&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Ketua 1</div>
-                </div>
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=Ketua+2&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Ketua 2</div>
-                </div>
-            </div>
-
-            <div class="org-level">
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=Sekre+1&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Sekretaris 1</div>
-                </div>
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=Sekre+2&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Sekretaris 2</div>
-                </div>
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=Bendahara+1&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Bendahara 1</div>
-                </div>
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=Bendahara+2&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Bendahara 2</div>
-                </div>
-            </div>
-
-            <h4 class="divisi-heading">Divisi PDD</h4>
-            <div class="org-level">
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=PDD+1&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Koord. PDD</div>
-                </div>
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=PDD+2&background=333&color=fff" alt="Foto" class="profile-img" />
-                    <div class="p-name">Nama Siswa</div>
-                    <div class="p-role">Anggota PDD</div>
+            <div class="slide-1-text-col">
+                @php
+                    $defaultJudul = 'LITERASI & KREATIFITAS DIGITAL TINGGI HANYA DI SMEZINE.';
+                    $judul = isset($slide1) && $slide1 && $slide1->judul ? $slide1->judul : $defaultJudul;
+                    // highlight SMEZINE (dengan atau tanpa titik) jika ada, else highlight kata terakhir
+                    if (str_contains(strtolower($judul), 'smezine')) {
+                        $judulHtml = preg_replace('/(smezine\.?)/i', '<span>$1</span>', e($judul));
+                    } else {
+                        $parts = explode(' ', e($judul));
+                        if (count($parts) > 1) {
+                            $last = array_pop($parts);
+                            $judulHtml = e(implode(' ', $parts)) . ' <span>' . $last . '</span>';
+                        } else {
+                            $judulHtml = '<span>' . e($judul) . '</span>';
+                        }
+                    }
+                    $defaultDeskripsi = 'Smezine (Ekstrakurikuler Majalah Dinding SMK N 1 Dukuhturi) adalah wadah eksplorasi jurnalistik modern, seni grafis, dan multimedia sekolah. Kami memadukan budaya literasi dengan estetika visual digital terkini untuk melahirkan karya berdaya cipta tinggi.';
+                    $deskripsi = isset($slide1) && $slide1 && $slide1->deskripsi ? $slide1->deskripsi : $defaultDeskripsi;
+                @endphp
+                <h1>{!! $judulHtml !!}</h1>
+                <p>{{ $deskripsi }}</p>
+                <div>
+                    <button class="btn-blue-action" onclick="jumpToSlide(1)">
+                        Pelajari Pimpinan <i class="fa-solid fa-arrow-down"></i>
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- SLIDE 2: KETUA UMUM - FOTO & NAMA DARI DATABASE -->
+    <section class="fullpage-slide-section" id="sec-slide-1">
+        <div class="slide-2-grid">
+            <div class="slide-2-card-col">
+                <div class="glass-intro-card">
+                    <h2>
+                        @if(isset($ketuaUmumSingle) && $ketuaUmumSingle) {{ $ketuaUmumSingle->nama }} @else Ketua Umum @endif
+                        <span>@if(isset($ketuaUmumSingle) && $ketuaUmumSingle) {{ $ketuaUmumSingle->jabatan }} - @endif Badan Pengurus Harian 2025 / 2026</span>
+                    </h2>
+                    <p>
+                        @if(isset($ketuaUmumSingle) && $ketuaUmumSingle)
+                            "{{ $ketuaUmumSingle->nama }} - {{ $ketuaUmumSingle->jabatan }} memimpin tim kreatif Smezine untuk terus berinovasi dalam mengemas informasi sekolah yang mendidik, segar, dan berwawasan digital tanpa menghilangkan nilai estetika karya."
+                        @else
+                            "Memimpin tim kreatif Smezine untuk terus berinovasi dalam mengemas informasi sekolah yang mendidik, segar, dan berwawasan digital tanpa menghilangkan nilai estetika karya."
+                        @endif
+                    </p>
+                    <button class="btn-blue-action" onclick="jumpToSlide(2)">
+                        Lihat Divisi & Pengurus <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+
+                    <div class="circular-bph-badge">
+                        #01
+                        <span>BPH</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-2-img-col">
+                <div class="curved-blue-bg"></div>
+                @if(isset($ketuaUmumSingle) && $ketuaUmumSingle)
+                    <img src="{{ $ketuaUmumSingle->foto ? asset('storage/' . $ketuaUmumSingle->foto) : $ketuaUmumSingle->foto_url }}" 
+                         alt="{{ $ketuaUmumSingle->nama }}" 
+                         class="lead-big-img"
+                         onerror="this.src='https://www.pngmart.com/files/13/Aesthetic-Anime-Boy-PNG-Photo.png'">
+                @else
+                    <img src="https://www.pngmart.com/files/13/Aesthetic-Anime-Boy-PNG-Photo.png" 
+                         alt="Ketua Umum" 
+                         class="lead-big-img"
+                         onerror="this.src='https://pngimg.com/uploads/anime_girl/anime_girl_PNG31.png'">
+                @endif
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: DIVISI & SELURUH PENGURUS HARIAN (SEMUA 8 ORANG TAMPIL) -->
+    <section class="fullpage-slide-section" id="sec-slide-2">
+        <div class="slide-3-grid">
+            <!-- Sisi Kiri: Blok Biru Tegak -->
+            <div class="slide-3-blue-col">
+                <div>
+                    <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: #bfdbfe; font-weight: 700;">Struktur Lengkap</span>
+                    <h2>DIVISI & PENGURUS HARIAN</h2>
+                    <p style="margin-top: 15px;">Keluarga inti penggerak literasi, ilustrasi, tata kelola, dan media digital mading Smezine.</p>
+                </div>
+
+                <!-- Tombol Navigasi Geser Kartu Kiri-Kanan -->
+.
+Yeah, yeah, yeah. players? Too.
+Yeah.
+            </div>
+
+            <!-- Sisi Kanan: Kartu Anggota DARI DATABASE - BISA DITAMBAH VIA ADMIN (Slide 3) -->
+            <div class="slide-3-cards-col" id="membersCardsTrack">
+                @forelse($slide3Members as $anggota)
+                    <div class="division-card-box">
+                        <img src="{{ $anggota->foto ? asset('storage/' . $anggota->foto) : $anggota->foto_url }}" 
+                             alt="{{ $anggota->nama }}" 
+                             class="char-img-inner"
+                             onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'">
+                        <div class="division-caption">
+                            <div class="d-tag">{{ $anggota->jabatan }}</div>
+                            <h3>{{ $anggota->nama }}</h3>
+                        </div>
+    
+                    </div>
+                @empty
+                    <div style="flex:0 0 340px; background: rgba(255,255,255,0.04); border:1px dashed rgba(255,255,255,0.14); border-radius:18px; padding:28px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
+                        <i class="fa-solid fa-users" style="font-size:2rem; color: var(--blue-primary);"></i>
+                        <p style="color:#cbd5e1; font-weight:700;">Belum ada anggota di slide ini</p>
+                        <p style="color:#94a3b8; font-size:0.85rem; line-height:1.5;">Foto & nama anggota diambil dari database.<br>Silakan kelola melalui <strong>Panel Kelola Anggota</strong>.</p>
+                    </div>
+                @endforelse
+
+               
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- SCRIPT PENGATUR SCROLL VERTICAL DAN HORIZONTAL -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('scrollContainer');
+        const sections = document.querySelectorAll('.fullpage-slide-section');
+        const dots = document.querySelectorAll('.v-dot-item');
+        const cardsTrack = document.getElementById('membersCardsTrack');
+
+        // 1. Fungsi Lompat Antar Slide Vertikal (0, 1, 2)
+        window.jumpToSlide = function(index) {
+            if (sections[index]) {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+
+        // 2. Fungsi Geser Kartu Anggota Horizontal di Slide 3
+        window.scrollMemberCards = function(amount) {
+            if (cardsTrack) {
+                cardsTrack.scrollBy({ left: amount, behavior: 'smooth' });
+            }
+        };
+
+        // 3. Scroll Mouse Wheel Otomatis Menggeser Kartu Saat Cursor Ada di Atas Kartu Slide 3
+        if (cardsTrack) {
+            cardsTrack.addEventListener('wheel', function(e) {
+                // Jika masih ada ruang geser ke samping, geser kartu horizontal
+                const isAtEnd = cardsTrack.scrollLeft + cardsTrack.clientWidth >= cardsTrack.scrollWidth - 10;
+                const isAtStart = cardsTrack.scrollLeft <= 10;
+
+                if ((e.deltaY > 0 && !isAtEnd) || (e.deltaY < 0 && !isAtStart)) {
+                    e.preventDefault();
+                    cardsTrack.scrollBy({ left: e.deltaY * 2.5, behavior: 'auto' });
+                }
+            }, { passive: false });
+        }
+
+        // 4. Deteksi Slide Aktif Menggunakan IntersectionObserver (Update Dots)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    sections.forEach(s => s.classList.remove('active'));
+                    entry.target.classList.add('active');
+
+                    const id = entry.target.id;
+                    const index = parseInt(id.replace('sec-slide-', ''));
+                    dots.forEach((dot, idx) => {
+                        dot.classList.toggle('active', idx === index);
+                    });
+                }
+            });
+        }, {
+            root: container,
+            threshold: 0.5
+        });
+
+        sections.forEach(sec => observer.observe(sec));
+
+        // 5. Dukungan Panah Keyboard Atas & Bawah
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowDown', 'PageDown', 'Space'].includes(e.key)) {
+                e.preventDefault();
+                container.scrollBy({ top: container.clientHeight, behavior: 'smooth' });
+            } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+                e.preventDefault();
+                container.scrollBy({ top: -container.clientHeight, behavior: 'smooth' });
+            }
+        });
+    });
+</script>
 @endsection

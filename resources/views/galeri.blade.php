@@ -3,10 +3,6 @@
 @section('title', 'Galeri Smezine - Curved 3D')
 
 @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
     <style>
         body {
             background-color: #0b0d10 !important;
@@ -69,30 +65,53 @@
             display: flex;
             align-items: center;
             perspective: 1300px;
-            overflow: visible;
+            overflow: hidden;
             padding: 40px 0;
         }
 
-        .swiper-curved {
+        /* Track native: digeser dengan drag mouse / swipe HP / tombol / keyboard,
+           polanya sama seperti card division di halaman tentang */
+        .gallery-track {
+            display: flex;
+            align-items: center;
+            gap: 26px;
             width: 100%;
-            overflow: visible !important;
-            padding: 60px 0 !important;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 60px 12px;
+            box-sizing: border-box;
+            cursor: grab;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .gallery-track::-webkit-scrollbar {
+            display: none;
+        }
+        .gallery-track.is-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .gallery-track.is-dragging img {
+            pointer-events: none;
+        }
+        .gallery-track:focus { outline: none; }
+        .gallery-track:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.35);
+            outline-offset: -2px;
+            border-radius: 12px;
         }
 
-        .swiper-wrapper {
-            will-change: transform;
-            transform-style: preserve-3d;
-        }
-
-        /* Wadah Slide (dikelola oleh internal Swiper untuk posisi loop) */
-        .swiper-curved .swiper-slide {
+        /* Wadah tiap kartu (transparan, hanya untuk layout) */
+        .gallery-track .g-slide {
             width: 270px;
             height: 380px;
+            flex: 0 0 auto;
             position: relative;
-            cursor: pointer;
-            overflow: visible !important;
-            background: transparent !important;
-            border: none !important;
+            background: transparent;
+            border: none;
         }
 
         @media (max-width: 768px) {
@@ -100,13 +119,13 @@
                 min-height: auto;
                 padding: 20px 0;
             }
-            .swiper-curved .swiper-slide {
+            .gallery-track .g-slide {
                 width: 195px;
                 height: 275px;
             }
         }
 
-        /* Kartu Fisik yang diberi efek 3D (tidak mengganggu rel Swiper) */
+        /* Kartu Fisik yang diberi efek 3D (efek diterapkan ke kartu, bukan wadahnya) */
         .slide-card {
             width: 100%;
             height: 100%;
@@ -459,7 +478,7 @@
             $displayGaleris = collect();
 
             if ($totalCount > 0) {
-                // Buffer secukupnya agar track Swiper selalu memiliki kartu di kedua sisi
+                // Buffer secukupnya agar track selalu memiliki kartu di kedua sisi (untuk putaran wrap)
                 $targetCount = max(18, $totalCount * 3);
                 $repeatCount = (int) ceil($targetCount / $totalCount);
                 for ($r = 0; $r < $repeatCount; $r++) {
@@ -473,32 +492,33 @@
             }
         @endphp
 
-        <!-- 3D Curved Arc Carousel Section -->
+        <!-- 3D Curved Arc Carousel Section (drag mouse / swipe HP / tombol / keyboard) -->
         <div class="curved-gallery-wrapper">
-            <div class="swiper swiper-curved">
-                <div class="swiper-wrapper">
-                    @forelse ($displayGaleris as $data)
-                        @php
-                            $foto = $data['item'];
-                            $origIndex = $data['original_index'];
-                        @endphp
-                        <div class="swiper-slide">
-                            <div class="slide-card" onclick="openLightbox({{ $origIndex }})">
-                                <img src="{{ asset('storage/' . $foto->gambar) }}" 
-                                     alt="{{ $foto->judul }}" 
-                                     loading="lazy">
-                                <div class="slide-info">
-                                    <h5>{{ $foto->judul }}</h5>
-                                    <p>{{ $foto->deskripsi }}</p>
-                                </div>
+            <div class="gallery-track" id="galleryTrack" tabindex="0"
+                 data-repeat="{{ $repeatCount ?? 1 }}"
+                 aria-label="Galeri karya, geser atau gunakan panah kiri kanan">
+                @forelse ($displayGaleris as $data)
+                    @php
+                        $foto = $data['item'];
+                        $origIndex = $data['original_index'];
+                    @endphp
+                    <div class="g-slide">
+                        <div class="slide-card" onclick="openLightbox({{ $origIndex }})">
+                            <img src="{{ asset('storage/' . $foto->gambar) }}" 
+                                 alt="{{ $foto->judul }}" 
+                                 loading="lazy"
+                                 draggable="false">
+                            <div class="slide-info">
+                                <h5>{{ $foto->judul }}</h5>
+                                <p>{{ $foto->deskripsi }}</p>
                             </div>
                         </div>
-                    @empty
-                        <div class="text-center text-secondary py-5 w-100">
-                            <p>Belum ada foto di galeri.</p>
-                        </div>
-                    @endforelse
-                </div>
+                    </div>
+                @empty
+                    <div style="text-align:center; color:#6c757d; padding:48px 0; width:100%;">
+                        <p>Belum ada foto di galeri.</p>
+                    </div>
+                @endforelse
             </div>
         </div>
 
@@ -564,9 +584,6 @@
 @endsection
 
 @push('scripts')
-    <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
     <script>
         const galleryItems = [
             @foreach ($originalGaleris as $item)
@@ -656,125 +673,273 @@
             }, { passive: true });
         }
 
+        // Drag strip thumbnail lightbox dengan mouse (seperti card division)
+        const thumbsContainer = document.querySelector('.modal-thumbs-container');
+        if (thumbsContainer) {
+            thumbsContainer.style.cursor = 'grab';
+            let tDown = false;
+            let tMoved = false;
+            let tX = 0;
+            let tScroll = 0;
+            thumbsContainer.addEventListener('pointerdown', e => {
+                if (e.pointerType !== 'mouse' || e.button !== 0) return;
+                tDown = true;
+                tMoved = false;
+                tX = e.clientX;
+                tScroll = thumbsContainer.scrollLeft;
+                thumbsContainer.style.cursor = 'grabbing';
+            });
+            thumbsContainer.addEventListener('pointermove', e => {
+                if (!tDown) return;
+                const dx = e.clientX - tX;
+                if (Math.abs(dx) > 6) tMoved = true;
+                if (tMoved) thumbsContainer.scrollLeft = tScroll - dx;
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(evt => {
+                thumbsContainer.addEventListener(evt, () => {
+                    tDown = false;
+                    thumbsContainer.style.cursor = 'grab';
+                    setTimeout(() => { tMoved = false; }, 50);
+                });
+            });
+            thumbsContainer.addEventListener('click', e => {
+                if (tMoved) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+        }
+
         // ========================================================
-        // INISIALISASI SWIPER DENGAN TRUE INFINITE FLOW (MENGALIR TANPA LONCAT)
+        // TRACK NATIVE ala division section:
+        // drag mouse (klik-tahan-geser), swipe HP (native), tombol,
+        // wheel vertikal -> horizontal, keyboard, efek 3D melengkung,
+        // dan putaran tanpa ujung (wrap antar salinan isi yang berulang)
         // ========================================================
         document.addEventListener('DOMContentLoaded', function () {
-            let isFastForwarding = false;
-            let activeDirection = null;
-            let holdTimer = null;
+            const track = document.getElementById('galleryTrack');
+            if (!track) return;
+            const slides = Array.from(track.querySelectorAll('.g-slide'));
+            if (!slides.length) return;
 
-            const swiper = new Swiper('.swiper-curved', {
-                slidesPerView: 'auto',
-                centeredSlides: true,
-                spaceBetween: 26,
-                grabCursor: true,
-                loop: true,
-                // Parameter Swiper 11 murni tanpa opsi usang
-                loopAdditionalSlides: 8,
-                loopPreventsSliding: false,
-                watchSlidesProgress: true,
-                roundLengths: true,
-                speed: 600,
-                touchRatio: 1.2,
-                resistanceRatio: 0.85,
-                on: {
-                    progress: function (s) {
-                        s.slides.forEach((slide) => {
-                            // Terapkan efek 3D ke elemen DALAM (.slide-card),
-                            // BUKAN ke .swiper-slide agar posisi loop Swiper tidak tertimpa
-                            const card = slide.querySelector('.slide-card');
-                            if (!card) return;
+            const GAP = 26;
+            const repeat = Math.max(1, parseInt(track.dataset.repeat || '1', 10));
 
-                            const progress = slide.progress;
-                            const absProgress = Math.abs(progress);
+            function cardStep() {
+                const first = slides[0];
+                return (first ? first.offsetWidth : 270) + GAP;
+            }
 
-                            const rotateY = progress * 13.5;
-                            const translateZ = Math.min(220, Math.pow(absProgress, 1.2) * 35);
-                            const scale = 1 + Math.pow(absProgress, 1.15) * 0.04;
-                            const translateY = Math.pow(absProgress, 1.25) * 4.5;
-
-                            card.style.transform = `perspective(1300px) translateY(${translateY}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
-                            slide.style.zIndex = Math.round(50 + absProgress * 10);
-                        });
-                    },
-                    setTransition: function (s, duration) {
-                        const timing = isFastForwarding ? 'linear' : 'cubic-bezier(0.22, 1, 0.36, 1)';
-
-                        s.slides.forEach((slide) => {
-                            const card = slide.querySelector('.slide-card');
-                            if (card) {
-                                card.style.transition = `${duration}ms ${timing}`;
-                            }
-                        });
-                        if (s.wrapperEl) {
-                            s.wrapperEl.style.transitionTimingFunction = timing;
-                        }
-                    }
-                }
-            });
-
-            // ========================================================
-            // FAST-FORWARD BERANTAI (CHAINED) TANPA RESET ATAU LONCAT
-            // ========================================================
-            function triggerFastStep() {
-                if (!isFastForwarding) return;
-                if (activeDirection === 'next') {
-                    swiper.slideNext(160, false);
-                } else {
-                    swiper.slidePrev(160, false);
+            // --- Efek 3D melengkung: dihitung dari jarak kartu ke tengah layar ---
+            let rafPending = false;
+            function applyCurve() {
+                rafPending = false;
+                const center = track.scrollLeft + track.clientWidth / 2;
+                const w = slides[0] ? slides[0].offsetWidth : 270;
+                slides.forEach((slide) => {
+                    const card = slide.querySelector('.slide-card');
+                    if (!card) return;
+                    // Tanda progress disamakan dengan Swiper: kartu di kanan tengah = negatif,
+                    // agar lengkungan tetap mencekung (mendalam) seperti semula
+                    const progress = (center - (slide.offsetLeft + slide.offsetWidth / 2)) / w;
+                    const abs = Math.min(Math.abs(progress), 4);
+                    const rotateY = Math.max(-45, Math.min(45, progress * 13.5));
+                    const translateZ = Math.min(220, Math.pow(abs, 1.2) * 35);
+                    const scale = 1 + Math.pow(abs, 1.15) * 0.04;
+                    const translateY = Math.pow(abs, 1.25) * 4.5;
+                    card.style.transform = `perspective(1300px) translateY(${translateY}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+                    slide.style.zIndex = Math.round(50 + abs * 10);
+                });
+            }
+            function requestCurve() {
+                if (!rafPending) {
+                    rafPending = true;
+                    requestAnimationFrame(applyCurve);
                 }
             }
 
-            // Tiap kali 1 kartu selesai bergeser, langsung sambung ke kartu berikutnya
-            swiper.on('transitionEnd', function () {
-                if (isFastForwarding) {
-                    triggerFastStep();
+            // --- Putaran tanpa ujung: jaga posisi di salinan tengah ---
+            function wrapAround() {
+                if (repeat < 2) return;
+                const unit = track.scrollWidth / repeat;
+                if (!unit) return;
+                const midIndex = Math.floor(repeat / 2);
+                const midStart = unit * midIndex;
+                const midEnd = midStart + unit;
+                const center = track.scrollLeft + track.clientWidth / 2;
+                if (center < midStart) {
+                    track.scrollLeft += unit;
+                } else if (center > midEnd) {
+                    track.scrollLeft -= unit;
                 }
+            }
+
+            track.addEventListener('scroll', function () {
+                wrapAround();
+                requestCurve();
+            }, { passive: true });
+
+            // --- Drag dengan mouse (klik-tahan-geser), seperti card division ---
+            let isDown = false;
+            let dragged = false;
+            let startX = 0;
+            let startScroll = 0;
+
+            track.querySelectorAll('img').forEach(function (img) {
+                img.setAttribute('draggable', 'false');
+                img.addEventListener('dragstart', function (e) { e.preventDefault(); });
             });
 
-            function setupSmoothHoldFastForward(btn, direction) {
-                if (!btn) return;
-
-                const startHold = (e) => {
-                    if (e.button !== undefined && e.button !== 0) return;
+            track.addEventListener('pointerdown', function (e) {
+                if (e.pointerType !== 'mouse' || e.button !== 0) return;
+                stopGlide(); // hentikan luncuran tombol agar drag manual yang pegang kendali
+                isDown = true;
+                dragged = false;
+                startX = e.clientX;
+                startScroll = track.scrollLeft;
+                track.classList.add('is-dragging');
+            });
+            track.addEventListener('pointermove', function (e) {
+                if (!isDown) return;
+                const dx = e.clientX - startX;
+                if (Math.abs(dx) > 6) dragged = true;
+                if (dragged) track.scrollLeft = startScroll - dx;
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (evt) {
+                track.addEventListener(evt, function () {
+                    isDown = false;
+                    track.classList.remove('is-dragging');
+                    setTimeout(function () { dragged = false; }, 50);
+                });
+            });
+            // bedakan klik vs drag: habis drag jangan buka lightbox
+            track.addEventListener('click', function (e) {
+                if (dragged) {
                     e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
 
-                    activeDirection = direction;
-
-                    // Geser 1 kali dengan animasi halus saat awal ditekan
-                    if (direction === 'next') swiper.slideNext(550);
-                    else swiper.slidePrev(550);
-
-                    // Jika ditekan > 240ms, aktifkan fast forward linear yang mengalir
-                    holdTimer = setTimeout(() => {
-                        isFastForwarding = true;
-                        triggerFastStep();
-                    }, 240);
-                };
-
-                const stopHold = () => {
-                    clearTimeout(holdTimer);
-
-                    if (isFastForwarding) {
-                        isFastForwarding = false;
-                        activeDirection = null;
-                        // Biarkan kartu yang sedang berputar berhenti secara alami di posisinya
-                        // (TIDAK memanggil slideTo / slideToClosest agar tidak memicu reset loncat)
+            // --- Wheel vertikal -> horizontal saat masih bisa geser (seperti division) ---
+            track.addEventListener('wheel', function (e) {
+                if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+                const maxLeft = track.scrollWidth - track.clientWidth - 10;
+                const isAtEnd = track.scrollLeft >= maxLeft;
+                const isAtStart = track.scrollLeft <= 10;
+                if ((e.deltaY > 0 && !isAtEnd) || (e.deltaY < 0 && !isAtStart)) {
+                    e.preventDefault();
+                    track.scrollBy({ left: e.deltaY * 2.5, behavior: 'auto' });
+                }
+            }, { passive: false });
+            // --- Tombol panah: fisika momentum seperti slide manual ---
+            // Ketuk cepat = meluncur halus 1 kartu; tahan = meluncur mengalir;
+            // lepas = melambat sendiri seperti melepas drag jari.
+            let holding = 0; // -1 | 0 | 1 : arah tombol yang sedang ditahan
+            let vel = 0; // px per frame
+            let rafId = null;
+            const MAX_VEL = 15;
+            function tick() {
+                if (holding !== 0) {
+                    vel += (holding * MAX_VEL - vel) * 0.12; // akselerasi halus
+                } else {
+                    vel *= 0.94; // deselerasi (momentum)
+                    if (Math.abs(vel) < 0.3) {
+                        vel = 0;
+                        rafId = null;
+                        return;
                     }
-                };
-
-                btn.addEventListener('mousedown', startHold);
-                btn.addEventListener('mouseup', stopHold);
-                btn.addEventListener('mouseleave', stopHold);
-
-                btn.addEventListener('touchstart', startHold, { passive: false });
-                btn.addEventListener('touchend', stopHold);
-                btn.addEventListener('touchcancel', stopHold);
+                }
+                track.scrollLeft += vel;
+                rafId = requestAnimationFrame(tick);
             }
+            function ensureTick() {
+                if (rafId === null) rafId = requestAnimationFrame(tick);
+            }
+            function stopGlide() {
+                holding = 0;
+                vel = 0;
+                if (rafId !== null) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+            }
+            function flick(dir) {
+                // sentakan seperti flick jari: meluncur ~1 kartu lalu berhenti sendiri
+                holding = 0;
+                vel = dir * 17;
+                ensureTick();
+            }
+            function stepOnce(dir) {
+                track.scrollBy({ left: dir * cardStep(), behavior: 'smooth' });
+            }
+            function setupHoldButton(btn, dir) {
+                if (!btn) return;
+                let pressedAt = 0;
+                const TAP_MS = 220;
+                const press = (e) => {
+                    if (e.pointerType === 'mouse' && e.button !== 0) return;
+                    e.preventDefault();
+                    pressedAt = performance.now();
+                    holding = dir;
+                    ensureTick();
+                };
+                const release = () => {
+                    if (holding !== dir) return;
+                    holding = 0;
+                    if (performance.now() - pressedAt < TAP_MS) {
+                        // ketuk cepat = geser halus 1 kartu (seperti klik biasa)
+                        stopGlide();
+                        stepOnce(dir);
+                    }
+                    // kalau tahan lama: biarkan momentum yang menyelesaikan
+                };
+                btn.setAttribute('tabindex', '0');
+                btn.setAttribute('role', 'button');
+                btn.addEventListener('pointerdown', press);
+                window.addEventListener('pointerup', release);
+                btn.addEventListener('pointercancel', release);
+                btn.addEventListener('pointerleave', release);
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        flick(dir);
+                    }
+                });
+            }
+            setupHoldButton(document.getElementById('galleryPrevBtn'), -1);
+            setupHoldButton(document.getElementById('galleryNextBtn'), 1);
 
-            setupSmoothHoldFastForward(document.getElementById('galleryPrevBtn'), 'prev');
-            setupSmoothHoldFastForward(document.getElementById('galleryNextBtn'), 'next');
+            // --- Keyboard: panah kiri/kanan = flick seperti slide manual ---
+            track.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    flick(-1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    flick(1);
+                }
+            });
+            document.addEventListener('keydown', function (e) {
+                if (modal.classList.contains('active')) return;
+                if (document.activeElement === track) return; // sudah ditangani di atas
+                if (e.key === 'ArrowLeft') flick(-1);
+                else if (e.key === 'ArrowRight') flick(1);
+            });
+
+            // --- Posisi awal: tengah salinan tengah agar bisa geser dua arah ---
+            function jumpToMiddle() {
+                if (repeat < 2) {
+                    applyCurve();
+                    return;
+                }
+                const unit = track.scrollWidth / repeat;
+                const midIndex = Math.floor(repeat / 2);
+                track.scrollLeft = unit * midIndex + unit / 2 - track.clientWidth / 2;
+                applyCurve();
+            }
+            jumpToMiddle();
+            window.addEventListener('load', jumpToMiddle);
+            window.addEventListener('resize', requestCurve);
         });
     </script>
 @endpush

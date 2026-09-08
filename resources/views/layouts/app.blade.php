@@ -40,8 +40,9 @@
                     @endguest
 
                     @auth
-                        <li><a href="{{ route('admin.berita.index') }}" style="color: var(--primary-color); font-weight: bold;">Kelola Berita</a></li>
-                        <li><a href="{{ route('admin.galeri.index') }}" style="color: var(--primary-color); font-weight: bold;">Kelola Galeri</a></li>
+                        <li><a href="{{ route('admin.berita.index') }}" style="color: var(--primary); font-weight: bold;">Kelola Berita</a></li>
+                        <li><a href="{{ route('admin.galeri.index') }}" style="color: var(--primary); font-weight: bold;">Kelola Galeri</a></li>
+                        <li><a href="{{ route('admin.anggota.index') }}" style="color: var(--primary); font-weight: bold;">Kelola Anggota</a></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                                 @csrf

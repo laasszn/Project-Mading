@@ -5,6 +5,9 @@ use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController; // <-- Jangan lupa ini buat login
+use App\Http\Controllers\TentangController;
+use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\TentangSlide1Controller;
 
 //HALAMAN PUBLIC
 
@@ -20,10 +23,8 @@ Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show
 //galeri
 Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri');
 
-//tentang
-Route::get('/tentang', function () {
-    return view('tentang');
-})->name('tentang');
+//tentang - foto & nama dari database (Anggota)
+Route::get('/tentang', [TentangController::class, 'index'])->name('tentang');
 
 
 //sistem login & logout
@@ -71,5 +72,18 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     // Hapus Foto Galeri
     Route::delete('/galeri/{id}', [GaleriController::class, 'destroy'])->name('galeri.destroy');
+
+    // Kelola Anggota Profil (Tentang) - foto dari database & bisa tambah di slide 3
+    Route::get('/anggota', [AnggotaController::class, 'adminIndex'])->name('anggota.index');
+    Route::get('/anggota/create', [AnggotaController::class, 'create'])->name('anggota.create');
+    Route::post('/anggota', [AnggotaController::class, 'store'])->name('anggota.store');
+    Route::get('/anggota/{id}/edit', [AnggotaController::class, 'edit'])->name('anggota.edit');
+    Route::put('/anggota/{id}', [AnggotaController::class, 'update'])->name('anggota.update');
+    Route::delete('/anggota/{id}', [AnggotaController::class, 'destroy'])->name('anggota.destroy');
+
+    // Kelola Slide 1 Tentang - hanya judul, deskripsi, file (tidak tambah anggota)
+    Route::get('/slide1/edit', [TentangSlide1Controller::class, 'edit'])->name('slide1.edit');
+    Route::put('/slide1', [TentangSlide1Controller::class, 'update'])->name('slide1.update');
+    Route::post('/slide1', [TentangSlide1Controller::class, 'update'])->name('slide1.store');
 
 });
