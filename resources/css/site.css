@@ -70,21 +70,21 @@ body {
 	opacity: 0;
 	
 	transition: opacity 0.1s ease-out;
-	will-change: opacity, transform;
+	/* will-change TANPA transform: "transform" di sini membuat body menjadi
+	   containing block elemen fixed (toggle tema, modal) sehingga mereka
+	   menempel ke ujung halaman, bukan viewport, di halaman panjang. */
+	will-change: opacity;
 	/* Optimasi GPU */
 }
 
 /* Class saat halaman selesai loading (Muncul) */
 body.loaded {
 	opacity: 1;
-	transform: translateY(0);
 }
 
 /* Class saat mau pindah halaman (Hilang) */
 body.fade-out {
 	opacity: 0;
-	transform: translateY(-10px);
-	/* Geser ke atas sedikit */
 }
 
 /* Security UI */
@@ -744,3 +744,180 @@ footer {
 	.dot { width: 22px; }
 	.dot.active { width: 28px; }
 }
+
+/* ============================
+   6. LIGHT MODE (putih + biru + merah + coklat keoranyean)
+   Aktif saat <html data-theme="light">. Default (tanpa atribut) = dark.
+   ============================ */
+html[data-theme="light"] {
+	--bg-body: #f7f9fc;
+	--bg-card: #ffffff;
+	--bg-nav: rgba(255, 255, 255, 0.92);
+	--primary: #2563eb;
+	--text-main: #0f172a;
+	--text-muted: #64748b;
+	--accent-red: #dc2626;
+	--accent-warm: #b45309;
+}
+
+html[data-theme="light"] body {
+	background-image: radial-gradient(circle at top left, #ffffff, #eef2f7);
+}
+
+/* Navbar */
+html[data-theme="light"] .navbar {
+	border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+	box-shadow: 0 2px 14px rgba(15, 23, 42, 0.06);
+}
+html[data-theme="light"] .brand-school { color: var(--accent-warm); }
+html[data-theme="light"] .brand-name { color: var(--text-main); }
+html[data-theme="light"] .nav-links a { color: #475569; }
+html[data-theme="light"] .nav-links a:hover,
+html[data-theme="light"] .nav-links a.active { color: var(--primary); }
+html[data-theme="light"] .hamburger { color: var(--text-main); }
+
+/* Toggle tema melayang — fixed pojok kiri bawah seperti navbar */
+.theme-toggle-float {
+	position: fixed;
+	left: 18px;
+	bottom: 18px;
+	z-index: 99990;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	background: rgba(20, 20, 22, 0.85);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	color: #fbbf24;
+	font-size: 1.1rem;
+	cursor: pointer;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+	transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.theme-toggle-float:hover {
+	transform: scale(1.1);
+	box-shadow: 0 8px 28px rgba(41, 151, 255, 0.45);
+}
+html[data-theme="light"] .theme-toggle-float {
+	border-color: rgba(180, 83, 9, 0.35);
+	background: #fff7ed;
+	color: var(--accent-warm);
+	box-shadow: 0 8px 24px rgba(180, 83, 9, 0.25);
+}
+
+/* Kartu & grid global */
+html[data-theme="light"] .card,
+html[data-theme="light"] .home-news-card {
+	border-color: rgba(15, 23, 42, 0.1);
+	box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
+	filter: none;
+	opacity: 1;
+	transform: none;
+}
+html[data-theme="light"] .card:hover,
+html[data-theme="light"] .home-news-card:hover {
+	border-color: var(--primary);
+	filter: none;
+}
+html[data-theme="light"] .card-title,
+html[data-theme="light"] .home-news-card h3 { color: var(--text-main); }
+html[data-theme="light"] .home-news-card .thumb { background: #e2e8f0; }
+html[data-theme="light"] .home-news-card .thumb img { filter: none; }
+html[data-theme="light"] .home-news-card .meta { color: #94a3b8; }
+html[data-theme="light"] .home-news-card .meta i { color: var(--accent-warm); }
+html[data-theme="light"] .home-news-card .foot { border-top-color: rgba(15, 23, 42, 0.08); }
+html[data-theme="light"] .home-news-card .foot span:first-child { color: #94a3b8 !important; }
+html[data-theme="light"] .list-item { border-bottom-color: rgba(15, 23, 42, 0.1); }
+html[data-theme="light"] .gallery-item img { border-color: rgba(15, 23, 42, 0.12); filter: none; }
+html[data-theme="light"] .gallery-item img:hover { border-color: var(--primary); }
+
+/* Form global */
+html[data-theme="light"] .form-container { border-color: rgba(15, 23, 42, 0.12); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1); }
+html[data-theme="light"] .form-control {
+	background: #f8fafc;
+	border-color: #cbd5e1;
+	color: var(--text-main);
+}
+
+/* Footer global */
+html[data-theme="light"] footer {
+	background: #ffffff;
+	border-top: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+/* Tabel admin (inline style gelap) — paksa terang */
+html[data-theme="light"] table { background: #ffffff !important; color: var(--text-main); box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07); }
+html[data-theme="light"] thead tr { background: #eff6ff !important; }
+html[data-theme="light"] thead th { color: #1e40af !important; }
+html[data-theme="light"] tbody tr { border-bottom-color: #e2e8f0 !important; }
+html[data-theme="light"] tbody td { color: var(--text-main); }
+html[data-theme="light"] tbody td[style*="#aaa"],
+html[data-theme="light"] td[colspan] { color: #64748b !important; }
+html[data-theme="light"] .admin-page-title { color: var(--text-main) !important; }
+html[data-theme="light"] .admin-page { color: var(--text-main) !important; }
+
+/* Kartu form admin (dipakai berulang di create/edit/slide1) + login */
+html[data-theme="light"] .admin-card,
+html[data-theme="light"] .login-card {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.12);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+}
+html[data-theme="light"] .admin-title,
+html[data-theme="light"] .login-title { color: var(--text-main); border-bottom-color: #e2e8f0; }
+html[data-theme="light"] .admin-subtitle { color: #64748b; }
+html[data-theme="light"] .admin-card .form-label,
+html[data-theme="light"] .login-card .form-label { color: #475569; }
+html[data-theme="light"] .admin-card .form-control,
+html[data-theme="light"] .login-card .form-control {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: var(--text-main);
+}
+html[data-theme="light"] .admin-card input[type="file"].form-control,
+html[data-theme="light"] .login-card input[type="file"].form-control { color: #64748b; }
+html[data-theme="light"] .admin-card input[type="file"]::-webkit-file-upload-button {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+html[data-theme="light"] .admin-card input[type="file"]::-webkit-file-upload-button:hover { background: #cbd5e1; }
+html[data-theme="light"] .admin-card .help-text { color: #94a3b8; }
+html[data-theme="light"] .admin-card .btn-cancel { background: #f1f5f9; color: #334155; }
+html[data-theme="light"] .admin-card .btn-cancel:hover { background: #e2e8f0; color: #0f172a; }
+html[data-theme="light"] .admin-card .preview-box { background: #f8fafc; border-color: rgba(15, 23, 42, 0.12); }
+
+/* Form admin sederhana (edit berita/galeri/anggota — inline style) */
+html[data-theme="light"] .admin-form input,
+html[data-theme="light"] .admin-form textarea,
+html[data-theme="light"] .admin-form select {
+    background: #f8fafc !important;
+    color: var(--text-main) !important;
+    border-color: #cbd5e1 !important;
+}
+html[data-theme="light"] .admin-form hr { border-color: #e2e8f0 !important; }
+html[data-theme="light"] .admin-form a { color: var(--primary) !important; }
+html[data-theme="light"] .admin-form p { color: #64748b !important; }
+
+/* Panel info admin (kelola anggota) */
+html[data-theme="light"] .admin-panel {
+    background: #ffffff !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
+}
+html[data-theme="light"] .admin-panel .ap-name { color: var(--text-main) !important; }
+html[data-theme="light"] .admin-panel .ap-desc { color: #64748b !important; }
+html[data-theme="light"] .admin-panel .ap-empty {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #94a3b8 !important;
+}
+html[data-theme="light"] .admin-note {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+    color: #475569 !important;
+}
+html[data-theme="light"] .admin-note strong { color: #1e40af !important; }

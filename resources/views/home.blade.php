@@ -86,6 +86,15 @@
             .home-karya-grid { grid-template-columns: 1fr; }
             .home-karya-card { aspect-ratio: 16 / 10; }
         }
+
+        /* LIGHT MODE (teks di atas foto tetap putih karena overlay gelap) */
+        html[data-theme="light"] .home-karya-card {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.12);
+            box-shadow: 0 6px 22px rgba(15, 23, 42, 0.1);
+        }
+        html[data-theme="light"] .home-karya-card img { filter: none; }
+        html[data-theme="light"] .home-karya-card:hover { border-color: var(--accent-red); }
     </style>
 @endpush
 

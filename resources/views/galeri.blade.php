@@ -460,6 +460,52 @@
             .modal-nav-btn.prev { left: 10px; }
             .modal-nav-btn.next { right: 10px; }
         }
+
+        /* LIGHT MODE */
+        html[data-theme="light"] body { background-color: #f7f9fc !important; }
+        html[data-theme="light"] .curved-header .badge-tag { color: var(--primary); }
+        html[data-theme="light"] .curved-header h1 { color: #0f172a; }
+        html[data-theme="light"] .curved-header p { color: #64748b; }
+        html[data-theme="light"] .slide-card {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.12);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+        }
+        html[data-theme="light"] .slider-btn {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.15);
+            color: #334155;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+        }
+        html[data-theme="light"] .slider-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+        html[data-theme="light"] .gallery-modal { background: rgba(248, 250, 252, 0.97); }
+        html[data-theme="light"] .modal-btn-close {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.15);
+            color: #0f172a;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+        }
+        html[data-theme="light"] .modal-nav-btn {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.15);
+            color: #0f172a;
+        }
+        html[data-theme="light"] .modal-stage img { filter: drop-shadow(0 20px 40px rgba(15, 23, 42, 0.25)); }
+        html[data-theme="light"] .modal-artwork-info h3 { color: #0f172a; text-shadow: none; }
+        html[data-theme="light"] .modal-artwork-info p { color: #64748b; text-shadow: none; }
+        html[data-theme="light"] .modal-thumbs-container {
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+        html[data-theme="light"] .thumb-box { background: #e2e8f0; }
+        html[data-theme="light"] .thumb-box.active {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 14px rgba(220, 38, 38, 0.35);
+        }
     </style>
 @endpush
 

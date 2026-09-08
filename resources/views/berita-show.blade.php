@@ -74,6 +74,23 @@
         .related-card:hover { transform: translateY(-4px); }
         .related-card img { width: 100%; height: 120px; object-fit: cover; }
         .related-card h4 { color: #fff; font-size: 0.95rem; margin: 10px 12px; }
+
+        /* LIGHT MODE */
+        html[data-theme="light"] .back-link { color: #64748b; }
+        html[data-theme="light"] .back-link:hover { color: var(--primary); }
+        html[data-theme="light"] .article-title { color: #0f172a; }
+        html[data-theme="light"] .article-meta { color: #94a3b8; }
+        html[data-theme="light"] .article-meta i { color: var(--accent-warm); }
+        html[data-theme="light"] .article-img { border-color: rgba(15, 23, 42, 0.12); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12); }
+        html[data-theme="light"] .article-body { color: #334155; }
+        html[data-theme="light"] .related-section { border-top-color: rgba(15, 23, 42, 0.12); }
+        html[data-theme="light"] .related-title { color: #0f172a; }
+        html[data-theme="light"] .related-card {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.1);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+        }
+        html[data-theme="light"] .related-card h4 { color: #0f172a; }
     </style>
 @endpush
 

@@ -3,8 +3,8 @@
 @section('title', 'Admin - Edit Foto Galeri')
 
 @section('content')
-<div class="container" style="max-width: 700px; margin: 40px auto; color: #fff;">
-    <h2>Edit Foto Galeri</h2>
+<div class="container admin-form" style="max-width: 700px; margin: 40px auto; color: #fff;">
+    <h2 class="admin-page-title">Edit Foto Galeri</h2>
     <hr style="border-color: #333; margin-bottom: 20px;">
 
     @if ($errors->any())

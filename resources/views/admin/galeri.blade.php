@@ -3,9 +3,9 @@
 @section('title', 'Admin - Kelola Galeri')
 
 @section('content')
-<div class="container" style="max-width: 1000px; margin: 40px auto; color: #fff;">
+<div class="container admin-page" style="max-width: 1000px; margin: 40px auto; color: #fff;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Kelola Galeri (Panel Admin)</h2>
+        <h2 class="admin-page-title">Kelola Galeri (Panel Admin)</h2>
         <a href="{{ route('admin.galeri.create') }}" style="background: #0d6efd; color: #fff; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: bold;">
             + Tambah Foto
         </a>

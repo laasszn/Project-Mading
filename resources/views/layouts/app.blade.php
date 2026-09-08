@@ -12,7 +12,15 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
             rel="stylesheet"
         />
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>
+            // Terapkan tema tersimpan sebelum paint agar tidak flicker.
+            try {
+                document.documentElement.dataset.theme = localStorage.getItem('smezine-theme') || 'dark';
+            } catch (e) {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        </script>
         @stack('styles')
     </head>
     <body oncontextmenu="return false;">
@@ -57,8 +65,8 @@
                 </div>
             </div>
         </nav>
+        <x-theme-toggle />
         @yield('content')
-        <script src="{{ asset('js/script.js') }}"></script>
         @stack('scripts')
     </body>
 </html>

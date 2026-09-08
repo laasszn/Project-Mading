@@ -588,6 +588,44 @@
                 right: 14px;
             }
         }
+
+        /* LIGHT MODE — panel biru slide 3 & badge DPH tetap seperti semula */
+        html[data-theme="light"] {
+            --dark-bg: #f7f9fc;
+            --dark-surface: #ffffff;
+            --dark-card: rgba(255, 255, 255, 0.94);
+            --dark-border: rgba(15, 23, 42, 0.1);
+            --text-muted: #64748b;
+        }
+        html[data-theme="light"] body { color: #0f172a; }
+        html[data-theme="light"] .manga-panel-pattern {
+            background-image:
+                radial-gradient(rgba(15, 23, 42, 0.07) 1.2px, transparent 1.2px),
+                linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+        }
+        html[data-theme="light"] .v-dot-item { background: rgba(15, 23, 42, 0.2); }
+        html[data-theme="light"] .t-dot { background: rgba(15, 23, 42, 0.18); }
+        html[data-theme="light"] .slide-1-text-col h1 { color: #0f172a; }
+        html[data-theme="light"] .hero-team-img,
+        html[data-theme="light"] .lead-big-img { filter: drop-shadow(0 20px 30px rgba(15, 23, 42, 0.25)); }
+        html[data-theme="light"] .glass-intro-card {
+            border-color: rgba(15, 23, 42, 0.12);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+        }
+        html[data-theme="light"] .glass-intro-card h2 { color: #0f172a; }
+        html[data-theme="light"] .glass-intro-card p { color: #475569; }
+        html[data-theme="light"] .division-card-box {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.12);
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+        }
+        html[data-theme="light"] .division-card-box::after {
+            background: linear-gradient(to top, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.65) 45%, transparent 85%);
+        }
+        html[data-theme="light"] .division-caption h3 { color: #0f172a; }
+        html[data-theme="light"] .d-bookmark { color: #94a3b8; }
+        html[data-theme="light"] .division-card-box:hover .d-bookmark { color: var(--accent-red); }
     </style>
 @endpush
 
@@ -710,9 +748,14 @@
                 </div>
 
                 <!-- Tombol Navigasi Geser Kartu Kiri-Kanan -->
-.
-Yeah, yeah, yeah. players? Too.
-Yeah.
+                <div class="cards-scroll-controls">
+                    <button type="button" class="btn-card-nav" onclick="scrollMemberCards(-280)" aria-label="Geser kartu ke kiri">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button type="button" class="btn-card-nav" onclick="scrollMemberCards(280)" aria-label="Geser kartu ke kanan">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Sisi Kanan: Kartu Anggota DARI DATABASE - BISA DITAMBAH VIA ADMIN (Slide 3) -->
