@@ -6,11 +6,83 @@
     <style>
         body { background-image: none !important; background-color: #121212 !important; opacity: 1 !important; transform: none !important; }
 
-        .berita-hero-header { text-align: center; margin-bottom: 40px; }
+        .berita-hero-header { text-align: center; margin-bottom: 28px; }
         .berita-hero-header h1 {
             color: #fff; font-weight: 700; font-size: 2.2rem; margin-bottom: 10px;
         }
         .berita-hero-header p { color: #999; }
+
+        /* Search bar normal di bawah header */
+        .berita-searchbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 640px;
+            margin: 0 auto 10px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 50px;
+            padding: 6px 6px 6px 20px;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .berita-searchbar:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
+        }
+        .berita-searchbar > i { color: #777; font-size: 0.95rem; flex-shrink: 0; }
+        .berita-searchbar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.92rem;
+            min-width: 0;
+        }
+        .berita-searchbar input::placeholder { color: #666; }
+        .berita-search-clear {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #aaa;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .berita-search-clear:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+        .berita-searchbar .search-submit {
+            flex-shrink: 0;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 26px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.25s ease;
+        }
+        .berita-searchbar .search-submit:hover { background: #147ce5; }
+        @media (max-width: 576px) {
+            .berita-searchbar { padding-left: 16px; }
+            .berita-searchbar .search-submit { padding: 9px 18px; }
+        }
+        .berita-search-meta {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+        }
+        .berita-search-meta a { color: var(--primary); font-weight: 600; margin-left: 8px; }
 
         /* Golden ratio φ = 1.618 — semua ukuran turunan φ */
         /* Featured article besar di atas — grid 1.618:1 (golden) */
@@ -117,6 +189,12 @@
         html[data-theme="light"] .featured-body .meta i,
         html[data-theme="light"] .news-card .meta i { color: var(--accent-warm); }
         html[data-theme="light"] .empty-state { color: #94a3b8; }
+        html[data-theme="light"] .berita-search-meta { color: #94a3b8; }
+        html[data-theme="light"] .berita-searchbar { background: #ffffff; border-color: rgba(15, 23, 42, 0.12); box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06); }
+        html[data-theme="light"] .berita-searchbar input { color: #0f172a; }
+        html[data-theme="light"] .berita-searchbar input::placeholder { color: #94a3b8; }
+        html[data-theme="light"] .berita-search-clear { background: #f1f5f9; color: #64748b; }
+        html[data-theme="light"] .berita-search-clear:hover { background: #e2e8f0; color: #0f172a; }
     </style>
 @endpush
 
@@ -132,10 +210,48 @@
             <p>Update terbaru seputar kegiatan Ekstrakurikuler Mading Smezine.</p>
         </div>
 
+        <form class="berita-searchbar" action="{{ route('berita.index') }}" method="GET" role="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari berita..." aria-label="Cari berita">
+            @if(!empty($q))
+                <a href="{{ route('berita.index') }}" class="berita-search-clear" aria-label="Hapus pencarian">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            @endif
+            <button type="submit" class="search-submit">Cari</button>
+        </form>
+
+        @if(!empty($q))
+            <p class="berita-search-meta">
+                {{ $beritas->count() }} hasil untuk &ldquo;{{ $q }}&rdquo;
+                <a href="{{ route('berita.index') }}">Reset</a>
+            </p>
+        @endif
+
         @if($beritas->isEmpty())
             <div class="empty-state">
                 <i class="fa-solid fa-newspaper" style="font-size: 2.5rem; margin-bottom: 15px; display: block;"></i>
-                Belum ada berita yang diterbitkan.
+                @if(!empty($q))
+                    Tidak ada berita yang cocok dengan &ldquo;{{ $q }}&rdquo;.
+                @else
+                    Belum ada berita yang diterbitkan.
+                @endif
+            </div>
+        @elseif(!empty($q))
+            {{-- Mode hasil pencarian: tampilkan semua hasil dalam satu grid --}}
+            <div class="news-grid">
+                @foreach($beritas as $berita)
+                    <a href="{{ route('berita.show', $berita->id) }}" class="news-card">
+                        <div class="thumb">
+                            <img src="{{ $berita->gambar ? asset('storage/' . $berita->gambar) : 'https://via.placeholder.com/400x220?text=No+Image' }}" alt="{{ $berita->judul }}">
+                        </div>
+                        <div class="body">
+                            <span class="meta"><i class="fa-regular fa-clock"></i> {{ $berita->waktu_tampil }}</span>
+                            <h3>{{ $berita->judul }}</h3>
+                            <p>{{ Str::limit($berita->deskripsi, 90) }}</p>
+                        </div>
+                    </a>
+                @endforeach
             </div>
         @else
             {{-- Berita paling baru ditampilkan besar sebagai headline --}}

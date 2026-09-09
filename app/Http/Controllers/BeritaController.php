@@ -9,10 +9,20 @@ use Illuminate\Support\Facades\Storage;
 class BeritaController extends Controller
 {
     // 1. Tampilan Publik -> resources/views/berita.blade.php
-    public function index()
+    public function index(Request $request)
     {
-        $beritas = Berita::latest()->get();
-        return view('berita', compact('beritas'));
+        $q = trim((string) $request->query('q', ''));
+
+        $beritas = Berita::latest()
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('judul', 'like', "%{$q}%")
+                        ->orWhere('deskripsi', 'like', "%{$q}%");
+                });
+            })
+            ->get();
+
+        return view('berita', compact('beritas', 'q'));
     }
 
     // 1b. Tampilan Detail Artikel -> resources/views/berita-show.blade.php

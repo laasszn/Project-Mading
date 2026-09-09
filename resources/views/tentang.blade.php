@@ -571,37 +571,196 @@
             transform: scale(1.15);
         }
 
-        /* RESPONSIVE LAYAR HP */
+        /* RESPONSIVE HP (desktop tidak diubah):
+           1) Snap dimatikan + slide jadi auto agar konten tak terpotong.
+           2) Semua animasi entrance dipaksa tampil supaya konten SELALU
+              terlihat walau observer mencabut .active.
+           3) Slide 1: banner biru + foto di atas, teks di bawah.
+           4) Slide 2: foto ketua tetap tampil (tidak disembunyikan). */
         @media (max-width: 992px) {
+            .fullpage-scroll-container {
+                height: calc(100vh - 65px);
+                height: calc(100dvh - 65px);
+                /* Snap per slide (proximity: menempel per layar tapi tak mengunci scroll) */
+                scroll-snap-type: y proximity;
+            }
+            .fullpage-slide-section {
+                width: 100%;
+                height: auto;
+                min-height: 100%;
+                max-height: none;
+                overflow: visible;
+                scroll-snap-align: start;
+                scroll-snap-stop: normal;
+                align-items: flex-start;
+            }
+            .hero-team-img,
+            .lead-big-img,
+            .glass-intro-card,
+            .division-card-box,
+            .slide-1-text-col h1,
+            .slide-1-text-col p,
+            .btn-blue-action {
+                transform: none !important;
+                opacity: 1 !important;
+            }
+
+            /* --- SLIDE 1: banner biru + foto di atas, teks di bawah --- */
             .slide-1-grid,
             .slide-2-grid,
             .slide-3-grid {
                 grid-template-columns: 1fr;
             }
             .slide-1-img-col {
-                order: 2;
-                height: 48%;
+                order: 0;
+                height: auto;
+                min-height: 0;
+                display: block;
+                text-align: center;
+                background: linear-gradient(175deg, #172554 0%, #1d4ed8 55%, #1e40af 100%);
+                padding: 22px 20px 18px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .hero-team-img {
+                display: inline-block;
+                vertical-align: middle;
+                min-width: 0;
+                min-height: 0;
+                width: auto;
+                height: auto;
+                max-width: 90%;
+                max-height: 34vh;
+                object-position: center;
+            }
+            .trio-indicator-dots {
+                display: none;
             }
             .slide-1-text-col {
                 order: 1;
-                padding: 40px 25px 0;
+                justify-content: flex-start;
+                padding: 32px 22px 0;
+            }
+            .slide-1-text-col h1 {
+                font-size: clamp(1.55rem, 6vw, 2.3rem);
+                margin-bottom: 14px;
+            }
+            .slide-1-text-col p {
+                font-size: 0.95rem;
+                margin-bottom: 26px;
+            }
+            .btn-blue-action {
+                padding: 12px 26px;
+                font-size: 0.9rem;
+            }
+
+            /* --- SLIDE 2: kartu di atas, foto ketua tampil di bawah --- */
+            .slide-2-card-col {
+                order: 1;
+                justify-content: flex-start;
+                align-items: stretch;
+                padding: 38px 22px 10px;
+            }
+            .glass-intro-card {
+                max-width: 100%;
+                padding: 32px 24px 40px;
+            }
+            .glass-intro-card h2 {
+                font-size: 1.5rem;
+            }
+            .glass-intro-card p {
+                font-size: 0.95rem;
+            }
+            .circular-bph-badge {
+                width: 58px;
+                height: 58px;
+                right: 16px;
+                font-size: 0.85rem;
             }
             .slide-2-img-col {
-                display: none;
+                order: 2;
+                display: block;
+                text-align: center;
+                height: auto;
+                min-height: 0;
+                overflow: hidden;
+                padding: 18px 18px 6px;
             }
-            .slide-2-card-col {
-                padding: 40px 25px 0;
-                justify-content: center;
+            .curved-blue-bg {
+                border-radius: 26px 26px 12px 12px;
+                border-left: none;
             }
+            .lead-big-img {
+                display: inline-block;
+                vertical-align: middle;
+                min-width: 0;
+                min-height: 0;
+                width: auto;
+                height: auto;
+                max-width: 84%;
+                max-height: 38vh;
+                object-position: center;
+            }
+
+            /* --- SLIDE 3: blok biru di atas, kartu geser di bawah --- */
             .slide-3-blue-col {
                 height: auto;
-                padding: 30px 25px 15px;
+                padding: 32px 22px 14px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .slide-3-blue-col h2 {
+                font-size: clamp(1.9rem, 9vw, 2.6rem);
+            }
+            .cards-scroll-controls {
+                margin-top: 14px;
+            }
+            .btn-card-nav {
+                width: 38px;
+                height: 38px;
             }
             .slide-3-cards-col {
-                padding: 15px 25px 40px;
+                height: 46vh;
+                min-height: 380px;
+                align-items: stretch;
+                padding: 14px 22px 24px;
+                gap: 16px;
             }
+            .division-card-box {
+                flex: 0 0 64vw;
+                max-width: 260px;
+                padding: 18px 16px;
+            }
+
+            /* Dots navigasi lebih kecil agar tidak menutupi konten */
             .vertical-dots-nav {
-                right: 14px;
+                right: 12px;
+                gap: 9px;
+            }
+            .v-dot-item {
+                width: 7px;
+                height: 7px;
+            }
+            .v-dot-item.active {
+                height: 22px;
+            }
+        }
+        @media (max-width: 420px) {
+            .hero-team-img {
+                max-height: 28vh;
+                max-width: 86%;
+            }
+            .lead-big-img {
+                max-height: 32vh;
+            }
+            .glass-intro-card h2 {
+                font-size: 1.3rem;
+            }
+            .slide-1-text-col {
+                padding: 28px 18px 0;
+            }
+            .slide-2-card-col {
+                padding-right: 18px;
+                padding-left: 18px;
             }
         }
 
@@ -907,6 +1066,24 @@
         });
 
         sections.forEach(sec => observer.observe(sec));
+
+        // Sinkronkan dots saat scroll di HP (hanya visual, tidak menyentuh
+        // kelas .active sehingga konten tetap terlihat).
+        let dotThrottled = false;
+        container.addEventListener('scroll', () => {
+            if (window.innerWidth > 992 || dotThrottled) return;
+            dotThrottled = true;
+            requestAnimationFrame(() => {
+                dotThrottled = false;
+                let best = 0, bestDist = Infinity;
+                sections.forEach((s, i) => {
+                    const r = s.getBoundingClientRect();
+                    const d = Math.abs((r.top + r.bottom) / 2 - (window.innerHeight / 2));
+                    if (d < bestDist) { bestDist = d; best = i; }
+                });
+                dots.forEach((dot, i) => dot.classList.toggle('active', i === best));
+            });
+        }, { passive: true });
 
         // 6. Dukungan Panah Keyboard Atas & Bawah
         window.addEventListener('keydown', (e) => {

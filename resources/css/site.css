@@ -750,6 +750,15 @@ footer {
 	.hero-content { width: 92%; }
 	.dot { width: 22px; }
 	.dot.active { width: 28px; }
+
+	/* Tabel admin: geser horizontal agar kolom tidak gepeng di HP */
+	.admin-page { overflow-x: auto; }
+	.admin-page table { min-width: 640px; }
+}
+@media (max-width: 576px) {
+	.container { padding: 0 16px; }
+	.section-title h2 { font-size: 1.5rem; }
+	.hero-content .btn-join { padding: 8px 20px; font-size: 0.85rem; }
 }
 
 /* ============================

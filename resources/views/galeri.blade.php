@@ -22,7 +22,9 @@
             padding: 25px 0 20px 0;
             box-sizing: border-box;
             position: relative;
-            overflow: hidden;
+            /* visible agar card 3D yang membesar tidak terpotong;
+               scroll horizontal tetap ditampung track, halaman oleh body */
+            overflow: visible;
         }
 
         /* Header Layout */
@@ -65,8 +67,13 @@
             display: flex;
             align-items: center;
             perspective: 1300px;
-            overflow: hidden;
+            /* visible: scroll horizontal sudah ditampung track sendiri,
+               jadi card 3D tidak terpotong wrapper */
+            overflow: visible;
             padding: 40px 0;
+            /* Display mode: transparan ikut background halaman, lapisan teratas konten */
+            background: transparent;
+            z-index: 60;
         }
 
         /* Track native: digeser dengan drag mouse / swipe HP / tombol / keyboard,
@@ -78,12 +85,21 @@
             width: 100%;
             overflow-x: auto;
             overflow-y: visible;
-            padding: 60px 12px;
+            /* CATATAN: overflow-x:auto memaksa overflow-y jadi auto,
+               jadi track TETAP memotong vertikal — padding atas-bawah
+               ini ruang napasnya agar card + bayangan tidak terpotong.
+               Bawah lebih besar karena bayangan menjulur ke bawah
+               (z-index tidak bisa mengatasi potongan overflow). */
+            padding: 70px 12px 120px;
             box-sizing: border-box;
             cursor: grab;
             scrollbar-width: none;
             -ms-overflow-style: none;
             -webkit-overflow-scrolling: touch;
+            /* Transparan ikut background halaman, lapisan teratas konten */
+            background: transparent;
+            position: relative;
+            z-index: 61;
         }
         .gallery-track::-webkit-scrollbar {
             display: none;
@@ -119,6 +135,9 @@
                 min-height: auto;
                 padding: 20px 0;
             }
+            .gallery-track {
+                padding: 60px 12px 110px;
+            }
             .gallery-track .g-slide {
                 width: 195px;
                 height: 275px;
@@ -132,7 +151,9 @@
             position: relative;
             border-radius: 22px;
             overflow: hidden;
-            background: #14161d;
+            /* Transparan ikut background halaman, bukan hitam sendiri
+               (keterbacaan caption dijaga overlay gradient ::after) */
+            background: transparent;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.12);
             user-select: none;
@@ -231,6 +252,110 @@
             transform: scale(0.95);
         }
 
+        /* ---- Switch Display / Grid Mode ---- */
+        .gallery-view-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 18px;
+            padding: 4px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .gallery-view-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 22px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            color: #9aa0a6;
+            font-family: "Poppins", sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+        .gallery-view-btn:hover { color: #ffffff; }
+        .gallery-view-btn.active {
+            background: #ffffff;
+            color: #000000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ========================================================
+           GRID MODE ala PINTEREST (masonry, lebar ikut skala gambar)
+           ======================================================== */
+        .gallery-masonry { display: none; }
+        .gallery-fullscreen-wrapper.grid-mode {
+            display: block;
+            min-height: auto;
+            overflow: visible;
+        }
+        .gallery-fullscreen-wrapper.grid-mode .curved-gallery-wrapper,
+        .gallery-fullscreen-wrapper.grid-mode .slider-controls {
+            display: none;
+        }
+        .gallery-fullscreen-wrapper.grid-mode .gallery-masonry {
+            display: block;
+            column-count: 4;
+            column-gap: 22px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 34px 24px 30px;
+            box-sizing: border-box;
+        }
+        .masonry-card {
+            display: inline-block;
+            width: 100%;
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+            margin: 0 0 22px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #14161d;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .masonry-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        /* Lebar ikut skala gambar: tinggi natural tiap foto */
+        .masonry-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            background: #000;
+        }
+        .masonry-info { padding: 14px 16px 16px; }
+        .masonry-info h5 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            margin: 0;
+            color: #fff;
+        }
+        .masonry-info p {
+            font-size: 0.82rem;
+            color: #a5b0c0;
+            margin: 4px 0 0 0;
+            line-height: 1.5;
+        }
+        @media (max-width: 1100px) {
+            .gallery-fullscreen-wrapper.grid-mode .gallery-masonry { column-count: 3; }
+        }
+        @media (max-width: 820px) {
+            .gallery-fullscreen-wrapper.grid-mode .gallery-masonry { column-count: 2; column-gap: 16px; padding: 24px 16px; }
+            .masonry-card { margin-bottom: 16px; }
+            .gallery-view-btn { padding: 8px 16px; font-size: 0.78rem; }
+        }
+
         /* ========================================================
            LIGHTBOX MODAL FULL SCREEN
            ======================================================== */
@@ -292,7 +417,9 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 300;
+            /* Paling belakang: di bawah stage foto (100), bottom-bar (200), tombol close (300).
+               Tetap terlihat & bisa diklik karena stage punya inset 100px (64px di HP). */
+            z-index: 50;
             backdrop-filter: blur(10px);
             transition: all 0.2s ease;
         }
@@ -309,8 +436,10 @@
             position: absolute;
             top: 20px;
             bottom: 95px;
-            left: 30px;
-            right: 30px;
+            /* Jarak aman dari tombol nav kiri-kanan (56px + offset 24px = 80px)
+               agar foto tidak pernah berada di bawah tombol */
+            left: 100px;
+            right: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -417,8 +546,9 @@
             .modal-stage {
                 top: 70px;
                 bottom: 135px;
-                left: 10px;
-                right: 10px;
+                /* Jarak aman dari tombol nav (44px + offset 10px = 54px) */
+                left: 64px;
+                right: 64px;
             }
             .modal-stage img {
                 max-height: calc(100vh - 210px);
@@ -467,7 +597,7 @@
         html[data-theme="light"] .curved-header h1 { color: #0f172a; }
         html[data-theme="light"] .curved-header p { color: #64748b; }
         html[data-theme="light"] .slide-card {
-            background: #ffffff;
+            background: transparent;
             border-color: rgba(15, 23, 42, 0.12);
             box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
         }
@@ -484,13 +614,19 @@
         }
         html[data-theme="light"] .gallery-modal { background: rgba(248, 250, 252, 0.97); }
         html[data-theme="light"] .modal-btn-close {
-            background: #ffffff;
+            /* Kaca translusen agar tidak terlihat memotong foto */
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-color: rgba(15, 23, 42, 0.15);
             color: #0f172a;
             box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
         }
         html[data-theme="light"] .modal-nav-btn {
-            background: #ffffff;
+            /* Kaca translusen agar sisi foto tetap terlihat tembus */
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-color: rgba(15, 23, 42, 0.15);
             color: #0f172a;
         }
@@ -506,16 +642,46 @@
             border-color: var(--accent-red);
             box-shadow: 0 0 14px rgba(220, 38, 38, 0.35);
         }
+        html[data-theme="light"] .gallery-view-switch {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.15);
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+        }
+        html[data-theme="light"] .gallery-view-btn { color: #64748b; }
+        html[data-theme="light"] .gallery-view-btn:hover { color: #0f172a; }
+        html[data-theme="light"] .gallery-view-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+        }
+        html[data-theme="light"] .masonry-card {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.12);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+        }
+        html[data-theme="light"] .masonry-card:hover { border-color: var(--primary); }
+        html[data-theme="light"] .masonry-card img { background: #e2e8f0; }
+        html[data-theme="light"] .masonry-info h5 { color: #0f172a; }
+        html[data-theme="light"] .masonry-info p { color: #64748b; }
     </style>
 @endpush
 
 @section('content')
-    <div class="gallery-fullscreen-wrapper">
+    <div class="gallery-fullscreen-wrapper" id="galleryFullscreenWrap">
         <!-- Header Section -->
         <div class="curved-header">
             <span class="badge-tag">Kumpulan Karya</span>
             <h1>Galeri Smezine</h1>
             <p>Jelajahi karya karya terbaru dari anggota kami</p>
+            <div>
+                <div class="gallery-view-switch" role="tablist" aria-label="Mode tampilan galeri">
+                    <button type="button" class="gallery-view-btn active" id="btnGalleryDisplay" onclick="setGalleryViewMode('display')" role="tab" aria-selected="true">
+                        <i class="fa-solid fa-clone"></i> Display
+                    </button>
+                    <button type="button" class="gallery-view-btn" id="btnGalleryGrid" onclick="setGalleryViewMode('grid')" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-grip"></i> Grid
+                    </button>
+                </div>
+            </div>
         </div>
 
         @php
@@ -583,6 +749,27 @@
                 </div>
             </div>
         @endif
+
+        <!-- Grid Mode ala Pinterest (lebar kolom ikut skala tiap gambar) -->
+        <div class="gallery-masonry" id="galleryMasonry">
+            @forelse ($originalGaleris as $i => $foto)
+                <div class="masonry-card" onclick="openLightbox({{ $i }})">
+                    <img src="{{ asset('storage/' . $foto->gambar) }}"
+                         alt="{{ $foto->judul }}"
+                         loading="lazy">
+                    <div class="masonry-info">
+                        <h5>{{ $foto->judul }}</h5>
+                        @if($foto->deskripsi)
+                            <p>{{ $foto->deskripsi }}</p>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div style="text-align:center; color:#6c757d; padding:48px 0; column-span: all;">
+                    <p>Belum ada foto di galeri.</p>
+                </div>
+            @endforelse
+        </div>
     </div>
 
     <!-- Modal Fullscreen -->
@@ -757,6 +944,39 @@
         }
 
         // ========================================================
+        // SWITCH DISPLAY / GRID MODE (tersimpan di localStorage)
+        // ========================================================
+        function setGalleryViewMode(mode) {
+            const wrap = document.getElementById('galleryFullscreenWrap');
+            const btnDisplay = document.getElementById('btnGalleryDisplay');
+            const btnGrid = document.getElementById('btnGalleryGrid');
+            const isGrid = mode === 'grid';
+            if (wrap) wrap.classList.toggle('grid-mode', isGrid);
+            if (btnDisplay) {
+                btnDisplay.classList.toggle('active', !isGrid);
+                btnDisplay.setAttribute('aria-selected', String(!isGrid));
+            }
+            if (btnGrid) {
+                btnGrid.classList.toggle('active', isGrid);
+                btnGrid.setAttribute('aria-selected', String(isGrid));
+            }
+            try { localStorage.setItem('smezine-gallery-view', isGrid ? 'grid' : 'display'); } catch (e) {}
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                if (localStorage.getItem('smezine-gallery-view') === 'grid') {
+                    setGalleryViewMode('grid');
+                }
+            } catch (e) {}
+        });
+
+        function isGalleryGridMode() {
+            const wrap = document.getElementById('galleryFullscreenWrap');
+            return !!(wrap && wrap.classList.contains('grid-mode'));
+        }
+
+        // ========================================================
         // TRACK NATIVE ala division section:
         // drag mouse (klik-tahan-geser), swipe HP (native), tombol,
         // wheel vertikal -> horizontal, keyboard, efek 3D melengkung,
@@ -790,9 +1010,11 @@
                     const progress = (center - (slide.offsetLeft + slide.offsetWidth / 2)) / w;
                     const abs = Math.min(Math.abs(progress), 4);
                     const rotateY = Math.max(-45, Math.min(45, progress * 13.5));
-                    const translateZ = Math.min(220, Math.pow(abs, 1.2) * 35);
-                    const scale = 1 + Math.pow(abs, 1.15) * 0.04;
-                    const translateY = Math.pow(abs, 1.25) * 4.5;
+                    // Dilunakkan agar card muat di padding track (80px) dan tidak terpotong:
+                    // translateZ 220->120, scale 0.04->0.022, translateY 4.5->3 (efek 3D tetap ada)
+                    const translateZ = Math.min(120, Math.pow(abs, 1.2) * 35);
+                    const scale = 1 + Math.pow(abs, 1.15) * 0.022;
+                    const translateY = Math.pow(abs, 1.25) * 3;
                     card.style.transform = `perspective(1300px) translateY(${translateY}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
                     slide.style.zIndex = Math.round(50 + abs * 10);
                 });
@@ -967,6 +1189,7 @@
             });
             document.addEventListener('keydown', function (e) {
                 if (modal.classList.contains('active')) return;
+                if (isGalleryGridMode()) return; // mode grid: biarkan scroll halaman normal
                 if (document.activeElement === track) return; // sudah ditangani di atas
                 if (e.key === 'ArrowLeft') flick(-1);
                 else if (e.key === 'ArrowRight') flick(1);
