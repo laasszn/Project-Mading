@@ -17,13 +17,13 @@ class Anggota extends Model
         'urutan',
     ];
 
-    // Helper untuk foto URL: kalau ada foto pakai storage, kalau tidak pakai ui-avatars
+    // foto anggota, kalau kosong pakai avatar tulisan nama aja
     public function getFotoUrlAttribute(): string
     {
         if ($this->foto) {
-            return asset('storage/' . $this->foto);
+            return asset('storage/'.$this->foto);
         }
-        // fallback avatar dengan background biru untuk jabatan pimpinan, abu untuk lainnya
+        // ketua umum biru, sisanya abu
         $bg = str_contains(strtolower($this->jabatan), 'ketua umum') ? '2997ff' : '333';
         $name = urlencode($this->nama);
         return "https://ui-avatars.com/api/?name={$name}&background={$bg}&color=fff&size=256";

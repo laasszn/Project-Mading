@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Storage;
 
 class BeritaController extends Controller
 {
-    // 1. Tampilan Publik -> resources/views/berita.blade.php
     public function index(Request $request)
     {
         $q = trim((string) $request->query('q', ''));
@@ -25,31 +24,27 @@ class BeritaController extends Controller
         return view('berita', compact('beritas', 'q'));
     }
 
-    // 1b. Tampilan Detail Artikel -> resources/views/berita-show.blade.php
     public function show(string $id)
     {
         $berita = Berita::findOrFail($id);
 
-        // Berita lain buat rekomendasi di bawah artikel
+        // buat rekomendasi di bawah artikel
         $lainnya = Berita::where('id', '!=', $berita->id)->latest()->take(3)->get();
 
         return view('berita-show', compact('berita', 'lainnya'));
     }
 
-    // 2. Tabel Admin -> resources/views/admin/berita.blade.php
     public function adminIndex()
     {
         $beritas = Berita::latest()->get();
         return view('admin.berita', compact('beritas'));
     }
 
-    // 3. Form Tambah Berita -> resources/views/admin/create.blade.php
     public function create()
     {
         return view('admin.create');
     }
 
-    // Simpan Berita Baru
     public function store(Request $request)
     {
         $request->validate([
@@ -68,14 +63,12 @@ class BeritaController extends Controller
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil ditambahkan!');
     }
 
-    // 4. Form Edit Berita -> resources/views/admin/edit.blade.php
     public function edit(string $id)
     {
         $berita = Berita::findOrFail($id);
         return view('admin.edit', compact('berita'));
     }
 
-    // Update Berita
     public function update(Request $request, string $id)
     {
         $berita = Berita::findOrFail($id);
@@ -89,9 +82,7 @@ class BeritaController extends Controller
         $data = $request->only(['judul', 'deskripsi']);
 
         if ($request->hasFile('gambar')) {
-            if ($berita->gambar && Storage::disk('public')->exists($berita->gambar)) {
-                Storage::disk('public')->delete($berita->gambar);
-            }
+            $this->hapusGambar($berita->gambar);
             $data['gambar'] = $request->file('gambar')->store('berita', 'public');
         }
 
@@ -99,16 +90,20 @@ class BeritaController extends Controller
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil diperbarui!');
     }
 
-    // Hapus Berita
     public function destroy(string $id)
     {
         $berita = Berita::findOrFail($id);
 
-        if ($berita->gambar && Storage::disk('public')->exists($berita->gambar)) {
-            Storage::disk('public')->delete($berita->gambar);
-        }
-
+        $this->hapusGambar($berita->gambar);
         $berita->delete();
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil dihapus!');
+    }
+
+    // hapus file lama biar gak numpuk
+    private function hapusGambar(?string $path): void
+    {
+        if ($path && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

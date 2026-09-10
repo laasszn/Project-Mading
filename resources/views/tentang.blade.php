@@ -3,7 +3,6 @@
 @section('title', 'Profil Smezine - SMK N 1 Dukuhturi')
 
 @push('styles')
-    <!-- Google Fonts & Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -18,7 +17,7 @@
             --text-muted: #94a3b8;
         }
 
-        /* RESET AGAR TIDAK TERKUNCI */
+        /* reset */
         html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -30,7 +29,7 @@
             overflow: hidden !important;
         }
 
-        /* MANGA SCREEN PATTERN (BERSIH, TANPA GLOW) */
+        /* pattern */
         .manga-panel-pattern {
             position: fixed;
             inset: 0;
@@ -43,9 +42,7 @@
             z-index: 1;
         }
 
-        /* ========================================================
-           CONTAINER UTAMA SCROLL-SNAP VERTIKAL (3 SLIDE)
-           ======================================================== */
+        /* container 3 slide */
         .fullpage-scroll-container {
             width: 100vw;
             height: calc(100vh - 65px);
@@ -102,9 +99,7 @@
             background: var(--blue-primary);
         }
 
-        /* ========================================================
-           SLIDE 1: INTRO (FOTO BESAR & TANPA GLOW)
-           ======================================================== */
+        /* slide 1 */
         .slide-1-grid {
             width: 100%;
             height: 100%;
@@ -235,9 +230,7 @@
             opacity: 1;
         }
 
-        /* ========================================================
-           SLIDE 2: KETUA UMUM (KARTU KACA & BADGE #01 BPH)
-           ======================================================== */
+        /* slide 2 */
         .slide-2-grid {
             width: 100%;
             height: 100%;
@@ -364,9 +357,7 @@
             opacity: 1;
         }
 
-        /* ========================================================
-           SLIDE 3: DIVISI & PENGURUS HARIAN (SEMUA 8 KARTU TAMPIL)
-           ======================================================== */
+        /* slide 3 */
         .slide-3-grid {
             width: 100%;
             height: 100%;
@@ -572,27 +563,39 @@
         }
 
         /* RESPONSIVE HP (desktop tidak diubah):
-           1) Snap dimatikan + slide jadi auto agar konten tak terpotong.
+           1) Tiap slide = 1 layar + snap mandatory seperti desktop;
+              konten panjang discroll di dalam slide (tidak terpotong).
            2) Semua animasi entrance dipaksa tampil supaya konten SELALU
               terlihat walau observer mencabut .active.
            3) Slide 1: banner biru + foto di atas, teks di bawah.
-           4) Slide 2: foto ketua tetap tampil (tidak disembunyikan). */
+           4) Slide 2: foto ketua di atas, kartu di bawah (tidak disembunyikan). */
         @media (max-width: 992px) {
             .fullpage-scroll-container {
                 height: calc(100vh - 65px);
                 height: calc(100dvh - 65px);
-                /* Snap per slide (proximity: menempel per layar tapi tak mengunci scroll) */
-                scroll-snap-type: y proximity;
+                /* Scroll per slide seperti desktop (mandatory, 1 layar per slide) */
+                scroll-snap-type: y mandatory;
             }
             .fullpage-slide-section {
                 width: 100%;
-                height: auto;
-                min-height: 100%;
-                max-height: none;
-                overflow: visible;
+                /* Tiap slide = 1 layar penuh seperti desktop; konten yang lebih
+                   panjang discroll di dalam slide-nya sendiri (tidak terpotong) */
+                height: calc(100vh - 65px);
+                height: calc(100dvh - 65px);
+                min-height: calc(100vh - 65px);
+                min-height: calc(100dvh - 65px);
+                max-height: calc(100vh - 65px);
+                max-height: calc(100dvh - 65px);
+                overflow-y: auto;
+                overflow-x: hidden;
                 scroll-snap-align: start;
-                scroll-snap-stop: normal;
+                scroll-snap-stop: always;
                 align-items: flex-start;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .fullpage-slide-section::-webkit-scrollbar {
+                display: none;
             }
             .hero-team-img,
             .lead-big-img,
@@ -653,12 +656,12 @@
                 font-size: 0.9rem;
             }
 
-            /* --- SLIDE 2: kartu di atas, foto ketua tampil di bawah --- */
+            /* --- SLIDE 2: foto ketua di atas, kartu di bawah --- */
             .slide-2-card-col {
                 order: 1;
                 justify-content: flex-start;
                 align-items: stretch;
-                padding: 38px 22px 10px;
+                padding: 12px 22px 36px;
             }
             .glass-intro-card {
                 max-width: 100%;
@@ -677,13 +680,13 @@
                 font-size: 0.85rem;
             }
             .slide-2-img-col {
-                order: 2;
+                order: 0;
                 display: block;
                 text-align: center;
                 height: auto;
                 min-height: 0;
                 overflow: hidden;
-                padding: 18px 18px 6px;
+                padding: 26px 18px 12px;
             }
             .curved-blue-bg {
                 border-radius: 26px 26px 12px 12px;
@@ -809,22 +812,20 @@
 @endpush
 
 @section('content')
-<!-- MANGA PATTERN OVERLAY (TANPA GLOW) -->
+<!-- pattern -->
 <div class="manga-panel-pattern"></div>
 
-<!-- INDIKATOR 3 TITIK VERTIKAL SISI KANAN -->
+<!-- titik kanan -->
 <div class="vertical-dots-nav">
     <div class="v-dot-item active" onclick="jumpToSlide(0)"></div>
     <div class="v-dot-item" onclick="jumpToSlide(1)"></div>
     <div class="v-dot-item" onclick="jumpToSlide(2)"></div>
 </div>
 
-<!-- ========================================================
-     CONTAINER FULLPAGE (HANYA 3 SLIDE)
-     ======================================================== -->
+<!-- 3 slide -->
 <div class="fullpage-scroll-container" id="scrollContainer">
 
-    <!-- SLIDE 1: INTRO SMEZINE - JUDUL, DESKRIPSI, FOTO DARI DB (tentang_slide1s) -->
+    <!-- slide 1 intro -->
     <section class="fullpage-slide-section active" id="sec-slide-0">
         <div class="slide-1-grid">
             <div class="slide-1-img-col">
@@ -845,7 +846,7 @@
                 @php
                     $defaultJudul = 'LITERASI & KREATIFITAS DIGITAL TINGGI HANYA DI SMEZINE.';
                     $judul = isset($slide1) && $slide1 && $slide1->judul ? $slide1->judul : $defaultJudul;
-                    // highlight SMEZINE (dengan atau tanpa titik) jika ada, else highlight kata terakhir
+                    // highlight smezine / kata terakhir
                     if (str_contains(strtolower($judul), 'smezine')) {
                         $judulHtml = preg_replace('/(smezine\.?)/i', '<span>$1</span>', e($judul));
                     } else {
@@ -871,7 +872,7 @@
         </div>
     </section>
 
-    <!-- SLIDE 2: KETUA UMUM - FOTO & NAMA DARI DATABASE -->
+    <!-- slide 2 ketua -->
     <section class="fullpage-slide-section" id="sec-slide-1">
         <div class="slide-2-grid">
             <div class="slide-2-card-col">
@@ -915,10 +916,10 @@
         </div>
     </section>
 
-    <!-- SLIDE 3: DIVISI & SELURUH PENGURUS HARIAN (SEMUA 8 ORANG TAMPIL) -->
+    <!-- slide 3 divisi -->
     <section class="fullpage-slide-section" id="sec-slide-2">
         <div class="slide-3-grid">
-            <!-- Sisi Kiri: Blok Biru Tegak -->
+            <!-- kiri -->
             <div class="slide-3-blue-col">
                 <div>
                     <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: #bfdbfe; font-weight: 700;">Struktur Lengkap</span>
@@ -926,7 +927,7 @@
                     <p style="margin-top: 15px;">Keluarga inti penggerak literasi, ilustrasi, tata kelola, dan media digital mading Smezine.</p>
                 </div>
 
-                <!-- Tombol Navigasi Geser Kartu Kiri-Kanan -->
+                <!-- tombol geser -->
                 <div class="cards-scroll-controls">
                     <button type="button" class="btn-card-nav" onclick="scrollMemberCards(-280)" aria-label="Geser kartu ke kiri">
                         <i class="fa-solid fa-arrow-left"></i>
@@ -937,7 +938,7 @@
                 </div>
             </div>
 
-            <!-- Sisi Kanan: Kartu Anggota DARI DATABASE - BISA DITAMBAH VIA ADMIN (Slide 3) -->
+            <!-- kartu anggota -->
             <div class="slide-3-cards-col" id="membersCardsTrack">
                 @forelse($slide3Members as $anggota)
                     <div class="division-card-box">
@@ -966,7 +967,7 @@
 
 </div>
 
-<!-- SCRIPT PENGATUR SCROLL VERTICAL DAN HORIZONTAL -->
+<!-- scroll -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('scrollContainer');
@@ -974,24 +975,24 @@
         const dots = document.querySelectorAll('.v-dot-item');
         const cardsTrack = document.getElementById('membersCardsTrack');
 
-        // 1. Fungsi Lompat Antar Slide Vertikal (0, 1, 2)
+        // pindah slide
         window.jumpToSlide = function(index) {
             if (sections[index]) {
                 sections[index].scrollIntoView({ behavior: 'smooth' });
             }
         };
 
-        // 2. Fungsi Geser Kartu Anggota Horizontal di Slide 3
+        // geser kartu
         window.scrollMemberCards = function(amount) {
             if (cardsTrack) {
                 cardsTrack.scrollBy({ left: amount, behavior: 'smooth' });
             }
         };
 
-        // 3. Scroll Mouse Wheel Otomatis Menggeser Kartu Saat Cursor Ada di Atas Kartu Slide 3
+        // scroll di atas kartu jadi geser samping
         if (cardsTrack) {
             cardsTrack.addEventListener('wheel', function(e) {
-                // Jika masih ada ruang geser ke samping, geser kartu horizontal
+                // kalau masih bisa geser, geser aja
                 const isAtEnd = cardsTrack.scrollLeft + cardsTrack.clientWidth >= cardsTrack.scrollWidth - 10;
                 const isAtStart = cardsTrack.scrollLeft <= 10;
 
@@ -1002,9 +1003,9 @@
             }, { passive: false });
         }
 
-        // 4. Grab-to-scroll ala galeri: klik-tahan-geser kartu dengan mouse
+        // geser pakai mouse
         if (cardsTrack) {
-            // Matikan drag bawaan gambar agar tidak bentrok dengan geser manual
+            // matiin drag bawaan
             cardsTrack.querySelectorAll('img').forEach(function (img) {
                 img.setAttribute('draggable', 'false');
                 img.addEventListener('dragstart', function (e) { e.preventDefault(); });
@@ -1037,7 +1038,7 @@
                     setTimeout(function () { dragged = false; }, 50);
                 });
             });
-            // Bedakan klik vs drag: habis drag jangan picu klik kartu
+            // habis drag jangan klik
             cardsTrack.addEventListener('click', function (e) {
                 if (dragged) {
                     e.preventDefault();
@@ -1046,7 +1047,7 @@
             }, true);
         }
 
-        // 5. Deteksi Slide Aktif Menggunakan IntersectionObserver (Update Dots)
+        // tandain slide aktif
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1067,8 +1068,7 @@
 
         sections.forEach(sec => observer.observe(sec));
 
-        // Sinkronkan dots saat scroll di HP (hanya visual, tidak menyentuh
-        // kelas .active sehingga konten tetap terlihat).
+        // titik di hp
         let dotThrottled = false;
         container.addEventListener('scroll', () => {
             if (window.innerWidth > 992 || dotThrottled) return;
@@ -1085,7 +1085,7 @@
             });
         }, { passive: true });
 
-        // 6. Dukungan Panah Keyboard Atas & Bawah
+        // keyboard atas-bawah
         window.addEventListener('keydown', (e) => {
             if (['ArrowDown', 'PageDown', 'Space'].includes(e.key)) {
                 e.preventDefault();

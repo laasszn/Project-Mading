@@ -14,7 +14,7 @@
         />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script>
-            // Terapkan tema tersimpan sebelum paint agar tidak flicker.
+            // pasang tema duluan biar gak kedip
             try {
                 document.documentElement.dataset.theme = localStorage.getItem('smezine-theme') || 'dark';
             } catch (e) {

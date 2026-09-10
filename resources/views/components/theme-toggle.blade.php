@@ -1,4 +1,4 @@
-{{-- Toggle dark/light mode, melayang fixed di pojok kiri bawah. Ikon disinkronkan resources/js/app.js. --}}
+{{-- tombol ganti tema --}}
 <button
     type="button"
     class="theme-toggle-float"

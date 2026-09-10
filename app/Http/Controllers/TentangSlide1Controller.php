@@ -11,12 +11,11 @@ use Illuminate\Support\Facades\Validator;
 
 class TentangSlide1Controller extends Controller
 {
-    // Tampilkan form atur Slide 1 (singleton)
     public function edit()
     {
         try {
             if (!Schema::hasTable('tentang_slide1s')) {
-                // tabel belum ada — tampilkan form kosong dengan pesan
+                // tabelnya belum ada, kasih form kosong aja
                 $slide1 = null;
                 return view('admin.slide1-edit', compact('slide1'))->with('warning', 'Tabel tentang_slide1s belum ada. Jalankan php artisan migrate.');
             }
@@ -28,15 +27,10 @@ class TentangSlide1Controller extends Controller
         return view('admin.slide1-edit', compact('slide1'));
     }
 
-    // Simpan / update Slide 1 (hanya judul, deskripsi, file)
     public function update(Request $request)
     {
         try {
-            // File terkirim tapi rusak di level PHP (mis. error UPLOAD_ERR_NO_TMP_DIR,
-            // UPLOAD_ERR_INI_SIZE karena melebihi upload_max_filesize, upload terputus, dll):
-            // jangan blokir seluruh penyimpanan — tetap simpan judul & deskripsi,
-            // lalu beri peringatan khusus soal foto.
-            // (Payload validasi dirakit manual agar file rusak tidak ikut divalidasi.)
+            // kalau fotonya rusak, judul + deskripsi tetap disimpan
             $fotoWarning = null;
             $sertakanFoto = false;
             $fotoFile = $request->file('foto');
@@ -55,7 +49,6 @@ class TentangSlide1Controller extends Controller
                     Log::warning('Slide1 foto upload error: code=' . $err);
                 }
             } elseif (!is_null($fotoFile)) {
-                // Bentuk tak terduga (mis. array): serahkan ke validator.
                 $sertakanFoto = true;
             }
 
@@ -91,11 +84,10 @@ class TentangSlide1Controller extends Controller
 
             if ($sertakanFoto) {
                 try {
-                    // hapus foto lama jika ada
+                    // hapus foto lama biar gak numpuk
                     if ($slide1 && $slide1->foto && Storage::disk('public')->exists($slide1->foto)) {
                         Storage::disk('public')->delete($slide1->foto);
                     }
-                    // pastikan folder ada
                     Storage::disk('public')->makeDirectory('tentang_slide1');
                     $data['foto'] = $fotoFile->store('tentang_slide1', 'public');
                 } catch (\Throwable $fe) {

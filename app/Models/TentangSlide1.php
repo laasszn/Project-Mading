@@ -15,11 +15,11 @@ class TentangSlide1 extends Model
         'foto',
     ];
 
-    // Helper URL foto
+    // foto slide 1, kalau kosong pakai gambar bawaan
     public function getFotoUrlAttribute(): string
     {
         if ($this->foto) {
-            return asset('storage/' . $this->foto);
+            return asset('storage/'.$this->foto);
         }
         return 'https://www.pngmart.com/files/4/Haikyuu-PNG-Photos.png';
     }

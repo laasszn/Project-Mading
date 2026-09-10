@@ -13,7 +13,7 @@
             padding: 0;
         }
 
-        /* 1. LAYOUT GALERI FULL SCREEN */
+        /* layout galeri */
         .gallery-fullscreen-wrapper {
             min-height: calc(100vh - 75px);
             display: flex;
@@ -22,12 +22,11 @@
             padding: 25px 0 20px 0;
             box-sizing: border-box;
             position: relative;
-            /* visible agar card 3D yang membesar tidak terpotong;
-               scroll horizontal tetap ditampung track, halaman oleh body */
+            /* biar card 3d gak kepotong */
             overflow: visible;
         }
 
-        /* Header Layout */
+        /* header */
         .curved-header {
             text-align: center;
             padding: 0 20px;
@@ -286,9 +285,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
 
-        /* ========================================================
-           GRID MODE ala PINTEREST (masonry, lebar ikut skala gambar)
-           ======================================================== */
+        /* mode grid */
         .gallery-masonry { display: none; }
         .gallery-fullscreen-wrapper.grid-mode {
             display: block;
@@ -326,7 +323,6 @@
             transform: translateY(-4px);
             border-color: rgba(255, 255, 255, 0.4);
         }
-        /* Lebar ikut skala gambar: tinggi natural tiap foto */
         .masonry-card img {
             width: 100%;
             height: auto;
@@ -356,9 +352,7 @@
             .gallery-view-btn { padding: 8px 16px; font-size: 0.78rem; }
         }
 
-        /* ========================================================
-           LIGHTBOX MODAL FULL SCREEN
-           ======================================================== */
+        /* popup */
         .gallery-modal {
             position: fixed;
             inset: 0;
@@ -667,7 +661,7 @@
 
 @section('content')
     <div class="gallery-fullscreen-wrapper" id="galleryFullscreenWrap">
-        <!-- Header Section -->
+        <!-- header -->
         <div class="curved-header">
             <span class="badge-tag">Kumpulan Karya</span>
             <h1>Galeri Smezine</h1>
@@ -690,7 +684,7 @@
             $displayGaleris = collect();
 
             if ($totalCount > 0) {
-                // Buffer secukupnya agar track selalu memiliki kartu di kedua sisi (untuk putaran wrap)
+                // digandain biar bisa muter terus
                 $targetCount = max(18, $totalCount * 3);
                 $repeatCount = (int) ceil($targetCount / $totalCount);
                 for ($r = 0; $r < $repeatCount; $r++) {
@@ -704,7 +698,7 @@
             }
         @endphp
 
-        <!-- 3D Curved Arc Carousel Section (drag mouse / swipe HP / tombol / keyboard) -->
+        <!-- galeri geser -->
         <div class="curved-gallery-wrapper">
             <div class="gallery-track" id="galleryTrack" tabindex="0"
                  data-repeat="{{ $repeatCount ?? 1 }}"
@@ -734,7 +728,7 @@
             </div>
         </div>
 
-        <!-- Tombol Navigasi Carousel Utama -->
+        <!-- tombol geser -->
         @if($totalCount > 0)
             <div class="slider-controls">
                 <div class="slider-btn prev-btn" id="galleryPrevBtn" aria-label="Previous Slide">
@@ -750,7 +744,7 @@
             </div>
         @endif
 
-        <!-- Grid Mode ala Pinterest (lebar kolom ikut skala tiap gambar) -->
+        <!-- mode grid -->
         <div class="gallery-masonry" id="galleryMasonry">
             @forelse ($originalGaleris as $i => $foto)
                 <div class="masonry-card" onclick="openLightbox({{ $i }})">
@@ -772,7 +766,7 @@
         </div>
     </div>
 
-    <!-- Modal Fullscreen -->
+    <!-- popup gambar -->
     <div id="customGalleryModal" class="gallery-modal" role="dialog" aria-modal="true">
         <button class="modal-btn-close" onclick="closeLightbox()" aria-label="Tutup Galeri">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -906,7 +900,7 @@
             }, { passive: true });
         }
 
-        // Drag strip thumbnail lightbox dengan mouse (seperti card division)
+        // geser thumbnail pakai mouse
         const thumbsContainer = document.querySelector('.modal-thumbs-container');
         if (thumbsContainer) {
             thumbsContainer.style.cursor = 'grab';
@@ -943,9 +937,7 @@
             }, true);
         }
 
-        // ========================================================
-        // SWITCH DISPLAY / GRID MODE (tersimpan di localStorage)
-        // ========================================================
+        // ganti display / grid, pilihannya disimpan
         function setGalleryViewMode(mode) {
             const wrap = document.getElementById('galleryFullscreenWrap');
             const btnDisplay = document.getElementById('btnGalleryDisplay');
@@ -976,12 +968,7 @@
             return !!(wrap && wrap.classList.contains('grid-mode'));
         }
 
-        // ========================================================
-        // TRACK NATIVE ala division section:
-        // drag mouse (klik-tahan-geser), swipe HP (native), tombol,
-        // wheel vertikal -> horizontal, keyboard, efek 3D melengkung,
-        // dan putaran tanpa ujung (wrap antar salinan isi yang berulang)
-        // ========================================================
+        // logic geser galeri
         document.addEventListener('DOMContentLoaded', function () {
             const track = document.getElementById('galleryTrack');
             if (!track) return;
@@ -996,7 +983,7 @@
                 return (first ? first.offsetWidth : 270) + GAP;
             }
 
-            // --- Efek 3D melengkung: dihitung dari jarak kartu ke tengah layar ---
+            // efek lengkung
             let rafPending = false;
             function applyCurve() {
                 rafPending = false;
@@ -1005,13 +992,11 @@
                 slides.forEach((slide) => {
                     const card = slide.querySelector('.slide-card');
                     if (!card) return;
-                    // Tanda progress disamakan dengan Swiper: kartu di kanan tengah = negatif,
-                    // agar lengkungan tetap mencekung (mendalam) seperti semula
+                    // biar tetap mencekung
                     const progress = (center - (slide.offsetLeft + slide.offsetWidth / 2)) / w;
                     const abs = Math.min(Math.abs(progress), 4);
                     const rotateY = Math.max(-45, Math.min(45, progress * 13.5));
-                    // Dilunakkan agar card muat di padding track (80px) dan tidak terpotong:
-                    // translateZ 220->120, scale 0.04->0.022, translateY 4.5->3 (efek 3D tetap ada)
+                    // dilunakin biar gak kepotong
                     const translateZ = Math.min(120, Math.pow(abs, 1.2) * 35);
                     const scale = 1 + Math.pow(abs, 1.15) * 0.022;
                     const translateY = Math.pow(abs, 1.25) * 3;
@@ -1026,7 +1011,7 @@
                 }
             }
 
-            // --- Putaran tanpa ujung: jaga posisi di salinan tengah ---
+            // biar muter terus
             function wrapAround() {
                 if (repeat < 2) return;
                 const unit = track.scrollWidth / repeat;
@@ -1047,7 +1032,7 @@
                 requestCurve();
             }, { passive: true });
 
-            // --- Drag dengan mouse (klik-tahan-geser), seperti card division ---
+            // geser pakai mouse
             let isDown = false;
             let dragged = false;
             let startX = 0;
@@ -1060,7 +1045,7 @@
 
             track.addEventListener('pointerdown', function (e) {
                 if (e.pointerType !== 'mouse' || e.button !== 0) return;
-                stopGlide(); // hentikan luncuran tombol agar drag manual yang pegang kendali
+                stopGlide(); // stop biar drag manual yang jalan
                 isDown = true;
                 dragged = false;
                 startX = e.clientX;
@@ -1080,7 +1065,7 @@
                     setTimeout(function () { dragged = false; }, 50);
                 });
             });
-            // bedakan klik vs drag: habis drag jangan buka lightbox
+            // habis drag jangan buka gambar
             track.addEventListener('click', function (e) {
                 if (dragged) {
                     e.preventDefault();
@@ -1088,7 +1073,7 @@
                 }
             }, true);
 
-            // --- Wheel vertikal -> horizontal saat masih bisa geser (seperti division) ---
+            // scroll bawah jadi geser samping
             track.addEventListener('wheel', function (e) {
                 if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
                 const maxLeft = track.scrollWidth - track.clientWidth - 10;
@@ -1099,18 +1084,16 @@
                     track.scrollBy({ left: e.deltaY * 2.5, behavior: 'auto' });
                 }
             }, { passive: false });
-            // --- Tombol panah: fisika momentum seperti slide manual ---
-            // Ketuk cepat = meluncur halus 1 kartu; tahan = meluncur mengalir;
-            // lepas = melambat sendiri seperti melepas drag jari.
-            let holding = 0; // -1 | 0 | 1 : arah tombol yang sedang ditahan
-            let vel = 0; // px per frame
+            // tombol panah, ketuk = 1 kartu, tahan = ngalir
+            let holding = 0; // arah tombol yg ditahan
+            let vel = 0;
             let rafId = null;
             const MAX_VEL = 15;
             function tick() {
                 if (holding !== 0) {
-                    vel += (holding * MAX_VEL - vel) * 0.12; // akselerasi halus
+                    vel += (holding * MAX_VEL - vel) * 0.12; // gas halus
                 } else {
-                    vel *= 0.94; // deselerasi (momentum)
+                    vel *= 0.94; // rem pelan
                     if (Math.abs(vel) < 0.3) {
                         vel = 0;
                         rafId = null;
@@ -1132,7 +1115,7 @@
                 }
             }
             function flick(dir) {
-                // sentakan seperti flick jari: meluncur ~1 kartu lalu berhenti sendiri
+                // flick jari
                 holding = 0;
                 vel = dir * 17;
                 ensureTick();
@@ -1155,11 +1138,11 @@
                     if (holding !== dir) return;
                     holding = 0;
                     if (performance.now() - pressedAt < TAP_MS) {
-                        // ketuk cepat = geser halus 1 kartu (seperti klik biasa)
+                        // ketuk = geser 1 kartu
                         stopGlide();
                         stepOnce(dir);
                     }
-                    // kalau tahan lama: biarkan momentum yang menyelesaikan
+                    // tahan lama biarin momentum
                 };
                 btn.setAttribute('tabindex', '0');
                 btn.setAttribute('role', 'button');
@@ -1177,7 +1160,7 @@
             setupHoldButton(document.getElementById('galleryPrevBtn'), -1);
             setupHoldButton(document.getElementById('galleryNextBtn'), 1);
 
-            // --- Keyboard: panah kiri/kanan = flick seperti slide manual ---
+            // keyboard kiri-kanan
             track.addEventListener('keydown', function (e) {
                 if (e.key === 'ArrowLeft') {
                     e.preventDefault();
@@ -1189,13 +1172,13 @@
             });
             document.addEventListener('keydown', function (e) {
                 if (modal.classList.contains('active')) return;
-                if (isGalleryGridMode()) return; // mode grid: biarkan scroll halaman normal
-                if (document.activeElement === track) return; // sudah ditangani di atas
+                if (isGalleryGridMode()) return; // mode grid biarin scroll biasa
+                if (document.activeElement === track) return;
                 if (e.key === 'ArrowLeft') flick(-1);
                 else if (e.key === 'ArrowRight') flick(1);
             });
 
-            // --- Posisi awal: tengah salinan tengah agar bisa geser dua arah ---
+            // mulai dari tengah biar bisa geser dua arah
             function jumpToMiddle() {
                 if (repeat < 2) {
                     applyCurve();

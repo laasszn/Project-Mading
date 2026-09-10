@@ -23,9 +23,9 @@
         </div>
     @endif
 
-    {{-- Kelola khusus Slide 1 & Slide 2 — Slide 1 sekarang pakai tabel tentang_slide1s (judul, deskripsi, foto) --}}
+    {{-- slide 1 & 2 --}}
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px;">
-        {{-- Slide 1: Judul, Deskripsi, Foto --}}
+        {{-- slide 1 --}}
         <div class="admin-panel" style="background:#1e1e1e; border:1px solid #333; border-radius:8px; padding:16px; display:flex; gap:14px; align-items:center;">
             <div style="flex-shrink:0;">
                 @if(isset($slide1) && $slide1 && $slide1->foto)
@@ -45,7 +45,7 @@
                 </a>
             </div>
         </div>
-        {{-- Slide 2 Ketua Umum --}}
+        {{-- slide 2 --}}
         <div class="admin-panel" style="background:#1e1e1e; border:1px solid #333; border-radius:8px; padding:16px; display:flex; gap:14px; align-items:center;">
             <div style="flex-shrink:0;">
                 @if(isset($ketuaUmum) && $ketuaUmum && $ketuaUmum->foto)

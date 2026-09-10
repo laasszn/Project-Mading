@@ -1,4 +1,3 @@
-{{-- Navbar utama Smezine. Dipakai di layouts/app. --}}
 <nav class="navbar">
     <div class="container nav-content">
         <a href="{{ url('/') }}" class="brand-wrapper" style="text-decoration:none;">

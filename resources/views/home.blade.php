@@ -4,7 +4,7 @@
 
 @push('styles')
     <style>
-        /* Karya Terbaru - grid & card khusus galeri di home */
+        /* karya di home */
         .home-karya-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -87,7 +87,7 @@
             .home-karya-card { aspect-ratio: 16 / 10; }
         }
 
-        /* LIGHT MODE (teks di atas foto tetap putih karena overlay gelap) */
+        /* light mode */
         html[data-theme="light"] .home-karya-card {
             background: #ffffff;
             border-color: rgba(15, 23, 42, 0.12);
@@ -141,7 +141,7 @@
     </header>
 
     <div class="container">
-        {{-- Section Berita Terbaru --}}
+        {{-- berita terbaru --}}
         <div class="section-header-row">
             <div class="section-title" style="margin-bottom:0">
                 <h2>Berita Terbaru</h2>
@@ -181,7 +181,7 @@
             <p style="color: #aaa; text-align: center; padding: 40px 0;">Belum ada berita yang diterbitkan.</p>
         @endif
 
-        {{-- Section Karya Terbaru (dari Galeri) --}}
+        {{-- karya terbaru --}}
         <div class="section-header-row" style="margin-top: 48px;">
             <div class="section-title" style="margin-bottom:0">
                 <h2>Karya Terbaru</h2>

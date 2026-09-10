@@ -12,7 +12,7 @@
         }
         .berita-hero-header p { color: #999; }
 
-        /* Search bar normal di bawah header */
+        /* searchbar */
         .berita-searchbar {
             display: flex;
             align-items: center;
@@ -84,19 +84,18 @@
         }
         .berita-search-meta a { color: var(--primary); font-weight: 600; margin-left: 8px; }
 
-        /* Golden ratio φ = 1.618 — semua ukuran turunan φ */
-        /* Featured article besar di atas — grid 1.618:1 (golden) */
+        /* headline */
         .featured-article {
             display: grid;
-            grid-template-columns: 1.618fr 1fr; /* φ : 1 golden */
+            grid-template-columns: 1.618fr 1fr;
             gap: 0;
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
-            border-radius: 13px; /* 8*φ */
+            border-radius: 13px;
             overflow: hidden;
             text-decoration: none;
             color: inherit;
-            margin-bottom: 34px; /* 21*φ ≈34 */
+            margin-bottom: 34px;
             max-width: 1040px;
             margin-left: auto;
             margin-right: auto;
@@ -105,30 +104,30 @@
         .featured-article:hover { border-color: var(--primary); transform: translateY(-3px); }
         .featured-article .img-wrap {
             position: relative;
-            aspect-ratio: 1.618 / 1; /* golden rectangle anti crop */
+            aspect-ratio: 1.618 / 1;
             overflow: hidden;
             background: #0f0f0f;
         }
         .featured-article .img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
         .featured-tag {
-            position: absolute; top: 13px; left: 13px; /* 8*φ */
+            position: absolute; top: 13px; left: 13px;
             background: var(--primary); color: #fff; font-size: 0.6875rem; font-weight: 700;
             padding: 4px 12px; border-radius: 30px; text-transform: uppercase; letter-spacing: 0.5px;
             z-index: 2;
         }
-        .featured-body { padding: 21px 21px 21px 34px; /* 13*φ=21, 21*φ=34 */ display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+        .featured-body { padding: 21px 21px 21px 34px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
         .featured-body .meta { color: #888; font-size: 0.75rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-        .featured-body h2 { color: #fff; font-size: 1.45rem; /* dikecilin dari 1.6 tapi ratio φ ke body */ font-weight: 700; line-height: 1.32; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .featured-body p { color: #b0b0b0; line-height: 1.618; /* φ */ margin-bottom: 14px; font-size: 0.875rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .featured-body h2 { color: #fff; font-size: 1.45rem; font-weight: 700; line-height: 1.32; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .featured-body p { color: #b0b0b0; line-height: 1.618; margin-bottom: 14px; font-size: 0.875rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .featured-body .read-more { color: var(--primary); font-weight: 600; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px; }
         .featured-article:hover .read-more { gap: 10px; }
 
-        /* Grid berita lainnya — golden spacing 21px */
+        /* grid berita */
         .berita-section-title { color: #fff; font-size: 1.18rem; font-weight: 700; margin-bottom: 21px; border-left: 4px solid var(--primary); padding-left: 13px; max-width: 1040px; margin-left: auto; margin-right: auto; }
         .news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* 260 ≈ 160*φ, lebih kecil proporsional */
-            gap: 21px; /* 13*φ */
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 21px;
             max-width: 1040px;
             margin: 0 auto;
         }
@@ -139,13 +138,13 @@
         }
         .news-card:hover { transform: translateY(-5px); box-shadow: 0 14px 28px rgba(0,0,0,0.5); border-color: var(--primary); }
         .news-card .thumb {
-            aspect-ratio: 1.618 / 1; /* golden, bukan fixed 190px biar tidak ke-crop */
+            aspect-ratio: 1.618 / 1;
             overflow: hidden;
             background: #0f0f0f;
         }
         .news-card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.5s ease; display: block; }
         .news-card:hover .thumb img { transform: scale(1.05); }
-        .news-card .body { padding: 13px 13px 14px; /* 8*φ */ flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
+        .news-card .body { padding: 13px 13px 14px; flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
         .news-card .meta { color: #777; font-size: 0.6875rem; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
         .news-card h3 { color: #fff; font-size: 0.9375rem; font-weight: 700; line-height: 1.35; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(1.35em * 2); }
         .news-card p { color: #999; font-size: 0.8125rem; line-height: 1.6; flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(1.6em * 2); }
@@ -238,7 +237,7 @@
                 @endif
             </div>
         @elseif(!empty($q))
-            {{-- Mode hasil pencarian: tampilkan semua hasil dalam satu grid --}}
+            {{-- hasil pencarian --}}
             <div class="news-grid">
                 @foreach($beritas as $berita)
                     <a href="{{ route('berita.show', $berita->id) }}" class="news-card">
@@ -254,7 +253,7 @@
                 @endforeach
             </div>
         @else
-            {{-- Berita paling baru ditampilkan besar sebagai headline --}}
+            {{-- headline --}}
             @php $headline = $beritas->first(); @endphp
             <a href="{{ route('berita.show', $headline->id) }}" class="featured-article">
                 <div class="img-wrap">

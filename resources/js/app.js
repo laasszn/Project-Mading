@@ -1,5 +1,4 @@
-// JS global Smezine (dibundel Vite sebagai ES module).
-// Fungsi yang dipakai atribut inline HTML diekspos eksplisit ke window.
+// js global, fungsi inline dilempar ke window biar kepanggil
 
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.onkeydown = function(e) {
@@ -8,31 +7,19 @@ document.onkeydown = function(e) {
     if (e.ctrlKey && e.key.toLowerCase() === 'u') return false;
 };
 
-
 document.addEventListener("DOMContentLoaded", () => {
-
-
     setTimeout(() => {
         document.body.classList.add('loaded');
     }, 50);
 
-
     const links = document.querySelectorAll('a');
-
     links.forEach(link => {
         link.addEventListener('click', (e) => {
             const href = link.getAttribute('href');
-
-
             if (!href || href.startsWith('#') || link.target === '_blank' || href.startsWith('javascript')) return;
-
             e.preventDefault();
-
-
             document.body.classList.remove('loaded');
             document.body.classList.add('fade-out');
-
-
             setTimeout(() => {
                 window.location.href = href;
             }, 300);
@@ -40,14 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
 function toggleMenu() {
     const el = document.getElementById('navLinks');
     if (el) el.classList.toggle('active');
 }
 window.toggleMenu = toggleMenu;
 
-// THEME TOGGLE - dark / light mode, tersimpan di localStorage.
+// ganti tema gelap-terang
 function syncThemeIcon() {
     const icon = document.getElementById('themeToggleIcon');
     if (!icon) return;
@@ -60,7 +46,7 @@ function setTheme(mode) {
     document.documentElement.dataset.theme = theme;
     try {
         localStorage.setItem('smezine-theme', theme);
-    } catch (e) { /* abaikan mode privat */ }
+    } catch (e) { /* biarin kalau gagal */ }
     syncThemeIcon();
 }
 
@@ -71,7 +57,7 @@ window.toggleTheme = toggleTheme;
 
 document.addEventListener('DOMContentLoaded', syncThemeIcon);
 
-// HERO SLIDER - robust, cegah title numpuk & image fullscreen
+// slider hero
 document.addEventListener("DOMContentLoaded", () => {
     const slides = document.querySelectorAll('.hero .slide');
     const dots = document.querySelectorAll('.hero .dot');
@@ -105,28 +91,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if (intervalId) { clearInterval(intervalId); intervalId = null; }
     }
 
-    // init: pastikan hanya slide 0 yang active (cegah numpuk di load)
+    // mulai dari slide 0
     slides.forEach((s, i) => s.classList.toggle('active', i === 0));
     dots.forEach((d, i) => {
         d.classList.toggle('active', i === 0);
         d.style.cursor = 'pointer';
         d.addEventListener('click', () => {
             showSlide(i);
-            startAuto(); // reset timer saat manual
+            startAuto();
         });
     });
 
-    // pause saat hover agar tidak kelewat cepat
+    // jeda pas hover
     hero.addEventListener('mouseenter', stopAuto);
     hero.addEventListener('mouseleave', startAuto);
 
     startAuto();
 });
 
-// SMART NAVBAR - sembunyi saat scroll ke bawah, langsung muncul
-// kembali saat scroll ke atas walau sedikit.
+// navbar ngumpet pas scroll ke bawah, nongol lagi pas scroll ke atas
 (function () {
-    const HIDE_AFTER = 120; // px: jangan sembunyi di paling atas halaman
+    const HIDE_AFTER = 120; // jangan ngumpet kalau masih di atas
     let lastY = window.scrollY || 0;
     let ticking = false;
 
@@ -135,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const nav = document.querySelector('.navbar');
         if (!nav) return;
         const y = window.scrollY || 0;
-        // Jangan sembunyikan saat menu mobile sedang terbuka.
+        // jangan ngumpet pas menu hp kebuka
         const menuOpen = document.getElementById('navLinks')?.classList.contains('active');
         if (menuOpen || y <= HIDE_AFTER) {
             nav.classList.remove('navbar-hidden');

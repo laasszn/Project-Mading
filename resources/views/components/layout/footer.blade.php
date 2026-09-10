@@ -1,6 +1,4 @@
-{{-- Footer Smezine 2 versi: LIGHT = siang kutub, DARK = malam kutub.
-     Gradasi langit berada di lapisan paling belakang scene dan
-     menjembatani warna di atas (background halaman) & di bawahnya. --}}
+{{-- footer --}}
 <style>
     footer.smezine-footer {
         --footer-body-top: #0c203f;
@@ -60,7 +58,6 @@
         width: 100%;
         height: 150px;
         margin-bottom: -2px;
-        /* Scene di lapisan belakang */
         position: relative;
         z-index: 0;
     }
@@ -69,10 +66,7 @@
         position: relative;
         z-index: 1;
     }
-    /* Gradasi langit (lapisan paling belakang di dalam scene):
-       atas transparan = ikut background halaman,
-       tengah = warna langit, bawah = warna tanah/body
-       -> menyesuaikan warna di atas & di bawahnya tiap ganti mode */
+    /* langit footer */
     .smezine-footer .sky-stop-0 { stop-color: var(--footer-sky); stop-opacity: 0; }
     .smezine-footer .sky-stop-mid { stop-color: var(--footer-sky); stop-opacity: 1; }
     .smezine-footer .sky-stop-1 { stop-color: var(--footer-body-top); stop-opacity: 1; }
@@ -154,9 +148,6 @@
         font-size: 0.82rem;
         color: var(--footer-muted);
     }
-    .gradient {
-        
-    }
     .smezine-footer .footer-bottom a { color: var(--footer-link); text-decoration: none; }
     .smezine-footer .footer-bottom a:hover { color: var(--footer-link-hover); }
     @media (max-width: 768px) {
@@ -167,9 +158,6 @@
 </style>
 
 <footer class="smezine-footer">
-    <div class="gradient">
-
-    </div>
     <svg class="footer-scene" viewBox="0 0 1440 150" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
         <defs>
             <linearGradient id="footerSkyFade" x1="0" y1="0" x2="0" y2="1">
