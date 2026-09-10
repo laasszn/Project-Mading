@@ -35,7 +35,20 @@ return [
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
-            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'database' => (function () {
+                $db = env('DB_DATABASE', database_path('database.sqlite'));
+                if ($db === ':memory:' || $db === null) return $db;
+                // jika sudah path absolut atau mengandung slash/backslash, pakai langsung
+                if (str_contains($db, '/') || str_contains($db, '\\') || str_contains($db, ':')) {
+                    return $db;
+                }
+                // jika hanya nama file seperti "db_berita", arahkan ke database_path atau base_path
+                // cek di base_path dulu (lokasi lama project menyimpan db_berita di root)
+                if (is_file(base_path($db))) return base_path($db);
+                if (is_file(database_path($db))) return database_path($db);
+                // default: simpan di database_path agar konsisten tidak tergantung CWD
+                return database_path($db);
+            })(),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
             'busy_timeout' => null,

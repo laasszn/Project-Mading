@@ -6,68 +6,194 @@
     <style>
         body { background-image: none !important; background-color: #121212 !important; opacity: 1 !important; transform: none !important; }
 
-        .berita-hero-header { text-align: center; margin-bottom: 40px; }
+        .berita-hero-header { text-align: center; margin-bottom: 28px; }
         .berita-hero-header h1 {
             color: #fff; font-weight: 700; font-size: 2.2rem; margin-bottom: 10px;
         }
         .berita-hero-header p { color: #999; }
 
-        /* Featured article besar di atas */
+        /* searchbar */
+        .berita-searchbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 640px;
+            margin: 0 auto 10px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 50px;
+            padding: 6px 6px 6px 20px;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .berita-searchbar:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.15);
+        }
+        .berita-searchbar > i { color: #777; font-size: 0.95rem; flex-shrink: 0; }
+        .berita-searchbar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.92rem;
+            min-width: 0;
+        }
+        .berita-searchbar input::placeholder { color: #666; }
+        .berita-search-clear {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #aaa;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .berita-search-clear:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+        .berita-searchbar .search-submit {
+            flex-shrink: 0;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 26px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.25s ease;
+        }
+        .berita-searchbar .search-submit:hover { background: #147ce5; }
+        @media (max-width: 576px) {
+            .berita-searchbar { padding-left: 16px; }
+            .berita-searchbar .search-submit { padding: 9px 18px; }
+        }
+        .berita-search-meta {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+        }
+        .berita-search-meta a { color: var(--primary); font-weight: 600; margin-left: 8px; }
+
+        /* headline */
         .featured-article {
             display: grid;
-            grid-template-columns: 1.1fr 1fr;
+            grid-template-columns: 1.618fr 1fr;
             gap: 0;
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
-            border-radius: 16px;
+            border-radius: 13px;
             overflow: hidden;
             text-decoration: none;
             color: inherit;
-            margin-bottom: 50px;
+            margin-bottom: 34px;
+            max-width: 1040px;
+            margin-left: auto;
+            margin-right: auto;
             transition: border-color 0.3s ease, transform 0.3s ease;
         }
         .featured-article:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .featured-article .img-wrap { position: relative; min-height: 320px; overflow: hidden; }
-        .featured-article .img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .featured-tag {
-            position: absolute; top: 18px; left: 18px;
-            background: var(--primary); color: #fff; font-size: 0.75rem; font-weight: 700;
-            padding: 5px 14px; border-radius: 30px; text-transform: uppercase; letter-spacing: 0.5px;
+        .featured-article .img-wrap {
+            position: relative;
+            aspect-ratio: 1.618 / 1;
+            overflow: hidden;
+            background: #0f0f0f;
         }
-        .featured-body { padding: 35px; display: flex; flex-direction: column; justify-content: center; }
-        .featured-body .meta { color: #888; font-size: 0.8rem; margin-bottom: 12px; }
-        .featured-body h2 { color: #fff; font-size: 1.6rem; font-weight: 700; line-height: 1.3; margin-bottom: 15px; }
-        .featured-body p { color: #b0b0b0; line-height: 1.7; margin-bottom: 20px; }
-        .featured-body .read-more { color: var(--primary); font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+        .featured-article .img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+        .featured-tag {
+            position: absolute; top: 13px; left: 13px;
+            background: var(--primary); color: #fff; font-size: 0.6875rem; font-weight: 700;
+            padding: 4px 12px; border-radius: 30px; text-transform: uppercase; letter-spacing: 0.5px;
+            z-index: 2;
+        }
+        .featured-body { padding: 21px 21px 21px 34px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+        .featured-body .meta { color: #888; font-size: 0.75rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .featured-body h2 { color: #fff; font-size: 1.45rem; font-weight: 700; line-height: 1.32; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .featured-body p { color: #b0b0b0; line-height: 1.618; margin-bottom: 14px; font-size: 0.875rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .featured-body .read-more { color: var(--primary); font-weight: 600; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 6px; }
         .featured-article:hover .read-more { gap: 10px; }
 
-        /* Grid berita lainnya */
-        .berita-section-title { color: #fff; font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; border-left: 4px solid var(--primary); padding-left: 12px; }
+        /* grid berita */
+        .berita-section-title { color: #fff; font-size: 1.18rem; font-weight: 700; margin-bottom: 21px; border-left: 4px solid var(--primary); padding-left: 13px; max-width: 1040px; margin-left: auto; margin-right: auto; }
         .news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 21px;
+            max-width: 1040px;
+            margin: 0 auto;
         }
         .news-card {
-            background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 14px; overflow: hidden;
+            background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 13px; overflow: hidden;
             text-decoration: none; color: inherit; display: flex; flex-direction: column;
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
-        .news-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.5); border-color: var(--primary); }
-        .news-card .thumb { height: 190px; overflow: hidden; }
-        .news-card .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .news-card:hover .thumb img { transform: scale(1.08); }
-        .news-card .body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; }
-        .news-card .meta { color: #777; font-size: 0.75rem; margin-bottom: 8px; }
-        .news-card h3 { color: #fff; font-size: 1.05rem; font-weight: 700; line-height: 1.4; margin-bottom: 10px; }
-        .news-card p { color: #999; font-size: 0.88rem; line-height: 1.6; flex-grow: 1; }
+        .news-card:hover { transform: translateY(-5px); box-shadow: 0 14px 28px rgba(0,0,0,0.5); border-color: var(--primary); }
+        .news-card .thumb {
+            aspect-ratio: 1.618 / 1;
+            overflow: hidden;
+            background: #0f0f0f;
+        }
+        .news-card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.5s ease; display: block; }
+        .news-card:hover .thumb img { transform: scale(1.05); }
+        .news-card .body { padding: 13px 13px 14px; flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
+        .news-card .meta { color: #777; font-size: 0.6875rem; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+        .news-card h3 { color: #fff; font-size: 0.9375rem; font-weight: 700; line-height: 1.35; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(1.35em * 2); }
+        .news-card p { color: #999; font-size: 0.8125rem; line-height: 1.6; flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(1.6em * 2); }
 
         .empty-state { text-align: center; color: #888; padding: 60px 20px; }
 
+        @media (max-width: 992px) {
+            .featured-article { grid-template-columns: 1.2fr 1fr; }
+            .news-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 768px) {
             .featured-article { grid-template-columns: 1fr; }
-            .featured-article .img-wrap { min-height: 220px; }
+            .featured-article .img-wrap { aspect-ratio: 1.618 / 1; }
+            .featured-body { padding: 18px; }
+            .news-grid { grid-template-columns: 1fr; }
         }
+
+        /* LIGHT MODE */
+        html[data-theme="light"] body { background-color: #f7f9fc !important; }
+        html[data-theme="light"] .berita-hero-header h1 { color: #0f172a; }
+        html[data-theme="light"] .berita-hero-header p { color: #64748b; }
+        html[data-theme="light"] .featured-article {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.1);
+            box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+        }
+        html[data-theme="light"] .featured-tag { background: var(--accent-red); }
+        html[data-theme="light"] .featured-body .meta { color: #94a3b8; }
+        html[data-theme="light"] .featured-body h2 { color: #0f172a; }
+        html[data-theme="light"] .featured-body p { color: #64748b; }
+        html[data-theme="light"] .berita-section-title { color: #0f172a; }
+        html[data-theme="light"] .news-card {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.1);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        }
+        html[data-theme="light"] .news-card .thumb { background: #e2e8f0; }
+        html[data-theme="light"] .news-card .meta { color: #94a3b8; }
+        html[data-theme="light"] .news-card h3 { color: #0f172a; }
+        html[data-theme="light"] .news-card p { color: #64748b; }
+        html[data-theme="light"] .featured-body .meta i,
+        html[data-theme="light"] .news-card .meta i { color: var(--accent-warm); }
+        html[data-theme="light"] .empty-state { color: #94a3b8; }
+        html[data-theme="light"] .berita-search-meta { color: #94a3b8; }
+        html[data-theme="light"] .berita-searchbar { background: #ffffff; border-color: rgba(15, 23, 42, 0.12); box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06); }
+        html[data-theme="light"] .berita-searchbar input { color: #0f172a; }
+        html[data-theme="light"] .berita-searchbar input::placeholder { color: #94a3b8; }
+        html[data-theme="light"] .berita-search-clear { background: #f1f5f9; color: #64748b; }
+        html[data-theme="light"] .berita-search-clear:hover { background: #e2e8f0; color: #0f172a; }
     </style>
 @endpush
 
@@ -83,13 +209,51 @@
             <p>Update terbaru seputar kegiatan Ekstrakurikuler Mading Smezine.</p>
         </div>
 
+        <form class="berita-searchbar" action="{{ route('berita.index') }}" method="GET" role="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari berita..." aria-label="Cari berita">
+            @if(!empty($q))
+                <a href="{{ route('berita.index') }}" class="berita-search-clear" aria-label="Hapus pencarian">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            @endif
+            <button type="submit" class="search-submit">Cari</button>
+        </form>
+
+        @if(!empty($q))
+            <p class="berita-search-meta">
+                {{ $beritas->count() }} hasil untuk &ldquo;{{ $q }}&rdquo;
+                <a href="{{ route('berita.index') }}">Reset</a>
+            </p>
+        @endif
+
         @if($beritas->isEmpty())
             <div class="empty-state">
                 <i class="fa-solid fa-newspaper" style="font-size: 2.5rem; margin-bottom: 15px; display: block;"></i>
-                Belum ada berita yang diterbitkan.
+                @if(!empty($q))
+                    Tidak ada berita yang cocok dengan &ldquo;{{ $q }}&rdquo;.
+                @else
+                    Belum ada berita yang diterbitkan.
+                @endif
+            </div>
+        @elseif(!empty($q))
+            {{-- hasil pencarian --}}
+            <div class="news-grid">
+                @foreach($beritas as $berita)
+                    <a href="{{ route('berita.show', $berita->id) }}" class="news-card">
+                        <div class="thumb">
+                            <img src="{{ $berita->gambar ? asset('storage/' . $berita->gambar) : 'https://via.placeholder.com/400x220?text=No+Image' }}" alt="{{ $berita->judul }}">
+                        </div>
+                        <div class="body">
+                            <span class="meta"><i class="fa-regular fa-clock"></i> {{ $berita->waktu_tampil }}</span>
+                            <h3>{{ $berita->judul }}</h3>
+                            <p>{{ Str::limit($berita->deskripsi, 90) }}</p>
+                        </div>
+                    </a>
+                @endforeach
             </div>
         @else
-            {{-- Berita paling baru ditampilkan besar sebagai headline --}}
+            {{-- headline --}}
             @php $headline = $beritas->first(); @endphp
             <a href="{{ route('berita.show', $headline->id) }}" class="featured-article">
                 <div class="img-wrap">
@@ -97,7 +261,7 @@
                     <img src="{{ $headline->gambar ? asset('storage/' . $headline->gambar) : 'https://via.placeholder.com/700x450?text=No+Image' }}" alt="{{ $headline->judul }}">
                 </div>
                 <div class="featured-body">
-                    <span class="meta">{{ $headline->created_at->translatedFormat('d F Y') }}</span>
+                    <span class="meta"><i class="fa-regular fa-clock"></i> {{ $headline->waktu_tampil }}</span>
                     <h2>{{ $headline->judul }}</h2>
                     <p>{{ Str::limit($headline->deskripsi, 180) }}</p>
                     <span class="read-more">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></span>
@@ -114,7 +278,7 @@
                                 <img src="{{ $berita->gambar ? asset('storage/' . $berita->gambar) : 'https://via.placeholder.com/400x220?text=No+Image' }}" alt="{{ $berita->judul }}">
                             </div>
                             <div class="body">
-                                <span class="meta">{{ $berita->created_at->translatedFormat('d F Y') }}</span>
+                                <span class="meta"><i class="fa-regular fa-clock"></i> {{ $berita->waktu_tampil }}</span>
                                 <h3>{{ $berita->judul }}</h3>
                                 <p>{{ Str::limit($berita->deskripsi, 90) }}</p>
                             </div>

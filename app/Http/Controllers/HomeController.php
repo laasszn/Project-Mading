@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Berita;
+use App\Models\Galeri;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        // Ambil 4 berita paling baru: 1 buat featured, 3 buat list kecil
-        $latestBerita = Berita::latest()->take(4)->get();
+        // buat slider + list berita + galeri di home
+        $sliderBeritas = Berita::latest()->take(3)->get();
+        $latestBeritas = Berita::latest()->take(6)->get();
+        $latestBerita = $latestBeritas;
+        $latestGaleris = Galeri::latest()->take(6)->get();
 
-        return view('home', compact('latestBerita'));
+        return view('home', compact('sliderBeritas', 'latestBeritas', 'latestBerita', 'latestGaleris'));
     }
 }
