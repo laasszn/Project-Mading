@@ -27,6 +27,8 @@
         padding: 0 0 26px;
         border-top: none;
         text-align: left;
+        position: relative;
+        overflow: hidden;
     }
     html[data-theme="light"] footer.smezine-footer {
         --footer-body-top: #d7e5f2;
@@ -66,6 +68,21 @@
         position: relative;
         z-index: 1;
     }
+    .smezine-footer .mezzie {
+        position: absolute;
+        right: -45px;
+        bottom: -35px;
+        width: 280px;
+        z-index: 2;
+        pointer-events: none;
+    }
+    .smezine-footer .mezzie img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transform: rotate(-45deg);
+    }
+
     /* langit footer */
     .smezine-footer .sky-stop-0 { stop-color: var(--footer-sky); stop-opacity: 0; }
     .smezine-footer .sky-stop-mid { stop-color: var(--footer-sky); stop-opacity: 1; }
@@ -154,6 +171,7 @@
         .smezine-footer .footer-cols { grid-template-columns: 1fr; gap: 24px; }
         .smezine-footer .footer-col + .footer-col { border-left: none; padding-left: 0; border-top: 1px solid var(--footer-line); padding-top: 24px; }
         .smezine-footer .footer-scene { height: 84px; }
+        .smezine-footer .mezzie {width: 100px; right: -30px; bottom: 0px;}
     }
 </style>
 
@@ -250,5 +268,9 @@
     <div class="footer-bottom">
         <span class="">&copy; {{ date('Y') }} Smezine — SMK N 1 Dukuhturi. All rights reserved.</span>
   
+    </div>
+
+    <div class="mezzie">
+        <img src="{{ asset('image/mezzie_mikir.png') }}" alt="Mezzie">
     </div>
 </footer>
